@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TOEIC対策 - 問題</title>
+</head>
+
+<body>
+    <section style="text-align: center;">
+        <h1>問題</h1>
+        <!--ここに問題文が入ります-->
+        <p id="question-text">ここに問題文が入ります。</p>
+
+        <!--選択肢-->
+        <p>
+            <strong>選択肢:</strong>
+        </p>
+        <!--選択肢たらページ遷移なく解答表示-->
+        <ul>
+            <li>A</li>
+            <li>B</li>
+            <li>C</li>
+            <li>D</li>
+        </ul>
+
+        <div id="answer-section" style="display: none;">
+            <!--正誤表示-->
+            <p id="result-label" style="font-weight: bold; font-size: 1.2em;"></p>
+
+            <!--解答-->
+            <p>
+                <strong>解答:</strong>
+            </p>
+            <p id="answer-text">ここに解答が入ります。</p>
+
+            <!--解説-->
+            <p>
+                <strong>解説:</strong>
+            </p>
+            <p id="explanation-text">ここに解説が入ります。</p>
+        </div>
+    </section>
+
+    <!--次の問題へ進むボタン-->
+    <button id="next-btn">次の問題</button>
+    <!--終了ボタン-->
+    <button id="result-btn">結果を表示</button>
+
+    <!--進捗バー-->
+    <div style="width: 100%; background-color: #ddd; border-radius: 10px; margin-bottom: 20px;">
+        <div id="progress-bar"
+            style="width: 0%; height: 10px; background-color: #4CAF50; border-radius: 10px; transition: width 0.3s;">
+        </div>
+    </div>
+
+</body>
+<script src="script.js"></script>
+
+</html>
