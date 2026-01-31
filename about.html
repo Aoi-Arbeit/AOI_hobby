@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Portfolio</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .profile-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--surface-color), var(--surface-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-content h1 {
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .skill-bar {
+            background: var(--surface-hover);
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 5px;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .profile-section {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">Portfolio.</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">ホーム</a></li>
+                    <li><a href="works.html">作品集</a></li>
+                    <li><a href="about.html">自己紹介</a></li>
+                    <li><a href="contact.html">お問い合わせ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <div class="profile-section fade-in">
+                    <div class="profile-image">
+                        <!-- Placeholder for user image -->
+                        User
+                    </div>
+                    <div class="profile-content">
+                        <h1>Who I Am</h1>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                            論理的思考力と技術力を兼ね備えたクリエイター。
+                            数学的な背景を持ちながら、プログラミングによる実装、データ分析による客観的なアプローチ、
+                            そして英語力を活かしたグローバルな視点でプロジェクトに取り組みます。
+                        </p>
+                        <p style="color: var(--text-secondary);">
+                            常に新しい技術を学び、効率的かつ洗練されたソリューションを提供することを目指しています。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="skills-section fade-in" style="margin-top: 4rem;">
+                    <h2 style="margin-bottom: 2rem; text-align: center;">Core Skills</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem;">
+                        <div>
+                            <h3 style="margin-bottom: 1rem;">Tech Stack</h3>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>HTML/CSS/JS</span>
+                                    <span>90%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Python (Data Analysis)</span>
+                                    <span>85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 85%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem;">Languages & Analyze</h3>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Mathematics</span>
+                                    <span>95%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 95%;"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>English</span>
+                                    <span>80%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 80%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        style="padding: var(--spacing-md) 0; text-align: center; color: var(--text-secondary); border-top: 1px solid var(--border-color);">
+        <p>&copy; 2026 Portfolio Site. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
