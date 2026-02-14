@@ -1,0 +1,16 @@
+[
+    {
+        "id": "20260209_001",
+        "q": "The supervisor ______ the proposal before the meeting.",
+        "options": ["reviewed", "reviews", "reviewing", "reviewer"],
+        "answer": 0,
+        "explanation": "過去の出来事について述べているため、reviewedが適切です。"
+    },
+    {
+        "id": "20260209_002",
+        "q": "The new software is ______ than the old one.",
+        "options": ["fast", "faster", "fastest", "fastly"],
+        "answer": 1,
+        "explanation": "thanがあるため比較級fasterを用います。"
+    }
+]
