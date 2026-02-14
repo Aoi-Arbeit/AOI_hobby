@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TOEIC対策 - 問題</title>
+</head>
+<body>
+
+    <section id="progress-section">
+        <div class="progress-text">
+            Question: <span id="current-num">1</span> / <span id="total-num">2</span>
+        </div>
+        <div style="width: 100%; background-color: #ddd; border-radius: 10px; margin-bottom: 20px;">
+            <div id="progress-bar"
+                style="width: 0%; height: 5px; background-color: #4CAF50; border-radius: 10px; transition: width 0.3s;">
+            </div>
+        </div>
+    </section>
+
+    <section id="question-area">
+        <h2 id="question-text">読み込み中...</h2>
+        
+        <ul id="options-list">
+            <li>選択肢A</li>
+            <li>選択肢B</li>
+            <li>選択肢C</li>
+            <li>選択肢D</li>
+        </ul>
+    </section>
+
+    <section id="answer-section" style="display: none;">
+        <div id="result-label"></div>
+        
+        <div class="explanation-box">
+            <p><strong>正解:</strong> <span id="answer-text"></span></p>
+            <p><strong>解説:</strong></p>
+            <p id="explanation-text"></p>
+        </div>
+    </section>
+
+    <section id="nav-section">
+        <button id="next-btn" style="display: none;">次の問題</button>
+        <button id="result-btn" style="display: none;">結果を表示</button>
+    </section>
+
+    <script src="problems.js"></script>
+</body>
+</html>

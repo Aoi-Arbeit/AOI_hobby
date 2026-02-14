@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>TOEIC対策 - マイページ</title>
+    </head>
+    <body>
+        <h1>マイページ</h1>
+        <div>
+            <div>
+                <img id="user-icon" src="" alt="ユーザーアイコン" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #ccc;">
+            </div>
+                <div id="name-container">
+                <span id="username">ゲスト</span>
+                <button id="edit-name-btn">編集</button>
+            </div>
+
+            <div id="edit-name-form" style="display: none;">
+                <input type="text" id="new-username" placeholder="新しい名前を入力">
+                <button id="save-name-btn">保存</button>
+                <button id="cancel-name-btn">キャンセル</button>
+            </div>
+        </div>
+
+        <section id="user-progress">
+            <h2>学習進捗</h2>
+            <p>連続日数: <span id="streakCount">0</span></p>
+            <p>総問題数: <span id="totalQuestions">0</span></p>
+        </section>
+
+        <a href="index.html">ホームに戻る</a>
+    </body>
+
+    <script type="module" src="mypage.js"></script>
+</html>
