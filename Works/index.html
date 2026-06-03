@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>じゃんけんゲーム</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- タイトル -->
+      <h1 class="title">🎮 じゃんけんゲーム</h1>
+
+      <!-- スコアエリア -->
+      <div class="score-area">
+            <div class="score-item score-win">
+                <span class="score-label">勝</span>
+                <span class="score-value" id="win-count">0</span>
+                <span class="score-unit">回</span>
+            </div>
+            <div class="score-item score-lose">
+                <span class="score-label">負</span>
+                <span class="score-value" id="lose-count">0</span>
+                <span class="score-unit">回</span>
+            </div>
+            <div class="score-item score-draw">
+                <span class="score-label">引き分け</span>
+                <span class="score-value" id="draw-count">0</span>
+                <span class="score-unit">回</span>
+            </div>
+      </div>
+
+      <!-- 連勝・連敗エリア -->
+      <div class="streak-area">
+        <p class="streak-text" id="streak-text">さあ、はじめよう！</p>
+      </div>
+
+      <!-- バトルエリア（手の表示） -->
+      <div class="battle-area">
+        <div class="hand-display">
+          <p class="hand-label">あなた</p>
+          <p class="hand-emoji" id="user-hand">❓</p>
+        </div>
+        <div class="vs-label">VS</div>
+        <div class="hand-display">
+          <p class="hand-label">コンピューター</p>
+          <p class="hand-emoji" id="cpu-hand">❓</p>
+        </div>
+      </div>
+
+      <!-- 結果表示エリア -->
+      <div class="result-area">
+        <p class="result-text" id="result-text">手を選んでください</p>
+      </div>
+
+      <!-- 手選択ボタン -->
+      <div class="button-area">
+        <button class="hand-btn" id="btn-guu"  data-choice="0">
+          <span class="btn-emoji">✊</span>
+          <span class="btn-label">グー</span>
+        </button>
+        <button class="hand-btn" id="btn-choki" data-choice="1">
+          <span class="btn-emoji">✋</span>
+          <span class="btn-label">パー</span>
+        </button>
+        <button class="hand-btn" id="btn-paa"  data-choice="2">
+          <span class="btn-emoji">✌️</span>
+          <span class="btn-label">チョキ</span>
+        </button>
+      </div>
+
+      <!-- リセットボタン -->
+      <div class="reset-area">
+        <button class="reset-btn" id="btn-reset">🔄 リセット</button>
+      </div>
+
+    </div><!-- /.container -->
+
+    <script src="script.js"></script>
+  </body>
+</html>

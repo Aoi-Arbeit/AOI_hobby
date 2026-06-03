@@ -1,0 +1,107 @@
+:root {
+  --color-bg-start:   #ffecd2;   /* 背景グラデーション（開始） */
+  --color-bg-end:     #fcb69f;   /* 背景グラデーション（終了） */
+  --color-primary:    #ff6b6b;   /* メインアクセントカラー（赤系） */
+  --color-secondary:  #4ecdc4;   /* サブアクセントカラー（青緑系） */
+  --color-win:        #3b82f6;   /* 勝ちカラー（青） */
+  --color-lose:       #ef4444;   /* 負けカラー（赤） */
+  --color-draw:       #6b7280;   /* 引き分けカラー（グレー） */
+  --color-white:      #ffffff;
+  --color-text:       #333333;
+  --color-shadow:     rgba(0, 0, 0, 0.15);
+  --radius-btn:       16px;      /* ボタンの角丸 */
+  --radius-card:      20px;      /* カードの角丸 */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    text-align: center;
+    max-width: 480px;
+}
+
+.title {
+    text-align: center;
+    font-weight: bold;
+    font-size: xx-large;
+    color: var(--color-primary);
+}
+
+.score-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 10px;
+    font-weight: bold;
+    font-size: large;
+}
+
+.score-item {
+    border-radius: var(--radius-btn);
+    padding: .4em;
+    box-shadow: 3px 2px 3px 2px var(--color-shadow);
+}
+
+.score-win {
+    background-color: var(--color-win);
+}
+
+.score-lose {
+    background-color: var(--color-lose);
+}
+
+.score-draw {
+    background-color: var(--color-draw);
+}
+
+.score-label {
+    font-weight: bold;
+    font-size: smaller;
+}
+
+.score-value {
+    font-weight: bold;
+    font-size: larger;
+}
+
+.score-unit {
+    font-size: smaller;
+}
+
+.streak-area {
+    text-align: center;
+}
+
+.streak-text {
+    font-size: medium;
+}
+
+.battle-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.hand-display {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.hand-label {
+    font-size: large;
+}
+
+.hand-emoji {
+    font-size: 4rem;
+}
+
+.vs-label {
+    font-weight: bolder;
+}
+
+.result-area {
+    text-align: center;
+}
