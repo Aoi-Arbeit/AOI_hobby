@@ -1,0 +1,41 @@
+h1 {
+    font-size: 40px;
+    font-family: 'Times New Roman', Times, serif;
+}
+h2 {
+    padding: 5px;
+    border-style: double;
+    border-width: 2px;
+    border-left-width: 10px;
+    border-left-style: solid;
+}
+body {
+    color: #336666;
+    background-color: #ccffff;
+}
+div {
+    text-align: center;
+}
+#penguin {
+    color: #669999;
+    font-weight: bolder;
+    padding: 2px;
+}
+p { 
+    line-height: 140%;
+}
+.penguin-list {
+    list-style-type: circle;
+    border-style: dashed;
+    border-width: 3px;
+    border-color: #336666;
+    background-color: #bbeeee;
+    border-radius: 20px;
+    padding: 20px 30px;
+}
+hr {
+    background-color: #336666;
+    border-color: #336666;
+    height: 3px;
+    width: 80%;
+}

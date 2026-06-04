@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライド3 - 今日の地図</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            overflow: hidden;
+        }
+        .domino {
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        .flow-arrow {
+            position: relative;
+        }
+        .flow-arrow::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            color: #D1D5DB;
+            font-weight: bold;
+        }
+        .flow-arrow:last-child::after {
+            content: '';
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col items-center p-12">
+
+    <!-- ヘッダー -->
+    <div class="w-full mb-8">
+        <h1 class="text-6xl font-black text-gray-800 mb-4">今日の地図</h1>
+        <p class="text-2xl font-bold text-gray-500 border-l-8 border-orange-500 pl-4">
+            M1・M2・M3の3原則がすべてのセクションに通底する
+        </p>
+    </div>
+
+    <!-- 中央：ドミノ図解 -->
+    <div class="flex-1 w-full flex flex-col justify-center items-center">
+        <div class="relative flex items-end space-x-4 mb-4">
+            <!-- 小さなきっかけ（一番左のドミノ） -->
+            <div class="domino w-8 h-20 bg-orange-500 rounded-sm transform -rotate-12 translate-y-2"></div>
+            <div class="domino w-10 h-28 bg-orange-400 rounded-sm transform -rotate-6 translate-y-1"></div>
+            <!-- 徐々に大きくなる連鎖 -->
+            <div class="domino w-12 h-36 bg-green-500 rounded-sm"></div>
+            <div class="domino w-14 h-44 bg-purple-500 rounded-sm"></div>
+            <div class="domino w-16 h-52 bg-red-400 rounded-sm"></div>
+        </div>
+        <div class="text-gray-400 font-bold text-lg tracking-widest mt-4">
+            小さなきっかけが、大きな変化の連鎖を生む
+        </div>
+    </div>
+
+    <!-- 下部：3原則バッジとセクションフロー -->
+    <div class="w-full bg-gray-50 rounded-3xl p-8 flex flex-col space-y-8 shadow-inner">
+        
+        <!-- 3原則バッジ -->
+        <div class="flex justify-center space-x-12">
+            <div class="flex items-center space-x-3 bg-white px-6 py-3 rounded-full shadow-sm border border-orange-100">
+                <span class="text-2xl">🟠</span>
+                <span class="text-xl font-black text-gray-700">M1 きっかけ</span>
+            </div>
+            <div class="flex items-center space-x-3 bg-white px-6 py-3 rounded-full shadow-sm border border-green-100">
+                <span class="text-2xl">🟢</span>
+                <span class="text-xl font-black text-gray-700">M2 自己一致</span>
+            </div>
+            <div class="flex items-center space-x-3 bg-white px-6 py-3 rounded-full shadow-sm border border-purple-100">
+                <span class="text-2xl">🟣</span>
+                <span class="text-xl font-black text-gray-700">M3 イメージ</span>
+            </div>
+        </div>
+
+        <!-- セクション進行フロー -->
+        <div class="flex justify-between items-center px-12">
+            <div class="flow-arrow flex flex-col items-center">
+                <span class="text-xs font-bold text-gray-400 mb-1 uppercase tracking-tighter">Section 01</span>
+                <span class="text-2xl font-black text-green-600">肉体</span>
+            </div>
+            <div class="flow-arrow flex flex-col items-center">
+                <span class="text-xs font-bold text-gray-400 mb-1 uppercase tracking-tighter">Section 02</span>
+                <span class="text-2xl font-black text-purple-600">精神</span>
+            </div>
+            <div class="flow-arrow flex flex-col items-center">
+                <span class="text-xs font-bold text-gray-400 mb-1 uppercase tracking-tighter">Section 03</span>
+                <span class="text-2xl font-black text-[#BF360C]">社会</span>
+            </div>
+            <div class="flow-arrow flex flex-col items-center">
+                <span class="text-xs font-bold text-gray-400 mb-1 uppercase tracking-tighter">Final</span>
+                <span class="text-2xl font-black text-blue-600">まとめ</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

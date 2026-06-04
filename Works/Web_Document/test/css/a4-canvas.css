@@ -1,0 +1,151 @@
+/* ── a4-canvas.css : A4固定キャンバス & 要素スタイル ── */
+
+/* キャンバスエリア（スクロール領域） */
+.canvas-area {
+  position: fixed;
+  top: 48px; left: 160px; right: 200px; bottom: 0;
+  overflow: auto;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px 60px;
+  gap: 32px;
+}
+
+/* A4ラッパー（スケール適用点） */
+.a4-wrapper {
+  transform-origin: top center;
+}
+
+/* A4 固定キャンバス本体: 210mm×297mm @96dpi = 794×1123px */
+.a4-page {
+  position: relative;
+  width: 794px;
+  height: 1123px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.a4-page.current-page { outline: 2px solid rgba(46,125,204,0.4); }
+
+/* ページ番号ラベル */
+.page-label {
+  position: absolute;
+  bottom: -22px; left: 0; right: 0;
+  text-align: center;
+  font-size: 10px; color: var(--color-muted);
+  pointer-events: none;
+}
+
+/* スケールバッジ */
+.scale-badge {
+  position: fixed; bottom: 12px; left: 172px;
+  background: rgba(26,58,92,0.82); color: #aad4ff;
+  font-size: 9px; font-family: 'JetBrains Mono', monospace;
+  padding: 3px 10px; border-radius: 12px;
+  pointer-events: none; z-index: 150;
+}
+
+/* ── 要素共通 ── */
+.doc-element {
+  position: absolute;
+  cursor: default;
+  user-select: none;
+  box-sizing: border-box;
+}
+.doc-element.selected {
+  outline: 1.5px solid var(--color-accent);
+  outline-offset: 1px;
+}
+.doc-element.locked { cursor: not-allowed; opacity: 0.85; }
+
+/* リサイズハンドル */
+.resize-handle {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--color-accent);
+  border: 1.5px solid #fff;
+  border-radius: 2px;
+  z-index: 10;
+  cursor: nwse-resize;
+}
+.resize-handle.nw { top: -4px; left: -4px; cursor: nw-resize; }
+.resize-handle.n  { top: -4px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+.resize-handle.ne { top: -4px; right: -4px; cursor: ne-resize; }
+.resize-handle.e  { top: 50%; right: -4px; transform: translateY(-50%); cursor: e-resize; }
+.resize-handle.se { bottom: -4px; right: -4px; cursor: se-resize; }
+.resize-handle.s  { bottom: -4px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+.resize-handle.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+.resize-handle.w  { top: 50%; left: -4px; transform: translateY(-50%); cursor: w-resize; }
+
+/* ── テキスト要素 ── */
+.el-text {
+  overflow: hidden;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.el-text.editing {
+  cursor: text;
+  outline: 1.5px dashed var(--color-accent);
+  overflow: visible;
+}
+.el-text[contenteditable="true"] { user-select: text; cursor: text; }
+
+/* ── 画像要素 ── */
+.el-image { overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.el-image img { width: 100%; height: 100%; }
+.el-image img[data-fit="contain"] { object-fit: contain; }
+.el-image img[data-fit="cover"]   { object-fit: cover; }
+.el-image img[data-fit="fill"]    { object-fit: fill; }
+.el-image .img-placeholder {
+  width: 100%; height: 100%;
+  background: var(--color-light);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; color: var(--color-muted); font-size: 11px;
+  border: 1.5px dashed var(--color-border);
+}
+.el-image .img-placeholder svg { width: 28px; height: 28px; opacity: 0.4; }
+
+/* ── 表要素 ── */
+.el-table { overflow: hidden; }
+.el-table table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+.el-table td {
+  border: 0.5pt solid #aaa;
+  padding: 3px 5px;
+  vertical-align: top;
+  font-size: 8pt;
+  word-break: break-word;
+  outline: none;
+}
+.el-table td.header-cell {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+.el-table td:focus { background: rgba(46,125,204,0.06); }
+
+/* ── 罫線要素 ── */
+.el-line { overflow: visible; }
+.el-line .line-body {
+  position: absolute;
+  background: currentColor;
+}
+.el-line.horizontal .line-body { left: 0; right: 0; top: 50%; height: 0; transform: translateY(-50%); }
+.el-line.vertical   .line-body { top: 0; bottom: 0; left: 50%; width: 0; transform: translateX(-50%); }
+
+/* グリッドガイド（スナップ表示） */
+.grid-guide {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(46,125,204,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,125,204,0.07) 1px, transparent 1px);
+  background-size: calc(5 * 3.779527559px) calc(5 * 3.779527559px); /* 5mm */
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.grid-guide.visible { opacity: 1; }

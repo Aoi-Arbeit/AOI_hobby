@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3つの健康：プレゼンテーション全集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* =========================================
+           1. 全体レイアウト・プレゼン制御
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: #0f172a;
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 16:9 画面アスペクト比維持用コンテナ */
+        #presentation-viewport {
+            width: 1280px;
+            height: 720px;
+            background-color: #fff;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            transform-origin: center;
+        }
+
+        /* スライドの表示制御 */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            padding: 50px 60px;
+            animation: fadeIn 0.4s ease-out;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ナビゲーションUI */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .nav-btn {
+            background: none; border: none; color: white; font-size: 24px; cursor: pointer;
+            width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.2); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .slide-number { font-weight: 700; font-size: 18px; min-width: 80px; text-align: center; }
+
+        /* =========================================
+           2. 共通デザイン・パーツ
+           ========================================= */
+        .section-badge { align-self: flex-start; font-size: 16px; font-weight: 700; padding: 4px 16px; border-radius: 30px; margin-bottom: 20px; letter-spacing: 0.1em; }
+        .badge-phys { color: #4ade80; border: 2px solid #4ade80; }
+        .badge-ment { color: #C084FC; border: 2px solid #C084FC; }
+        .badge-soc { color: #fca5a5; border: 2px solid #fca5a5; }
+        
+        .bg-navy { background-color: #1F4E79; color: #fff; }
+        .bg-phys-intro { background-color: #1E5128; color: #fff; }
+        .bg-ment-intro { background-color: #3B1F6E; color: #fff; }
+        .bg-soc-intro { background-color: #7B1D1D; color: #fff; }
+
+        .content-2col { display: flex; flex-grow: 1; width: 100%; gap: 40px; align-items: center; }
+        .col-left { flex: 1; }
+        .col-right { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; height: 100%; }
+
+        .keyword-main { font-size: 72px; font-weight: 900; line-height: 1.2; color: #1F4E79; }
+        .accent-blue { color: #87CEFA; }
+        .accent-green { color: #4ade80; }
+        .accent-gold { color: #f59e0b; }
+
+        /* ワーク用パーツ */
+        .wb-input { flex-grow: 1; border: 2px dashed rgba(0,0,0,0.1); border-radius: 15px; margin-top: 15px; background: rgba(255,255,255,0.5); }
+        
+        /* タイムライン */
+        .tl-line { position: absolute; left: 50%; top: 20px; bottom: 20px; width: 4px; background: #cbd5e1; transform: translateX(-50%); }
+        .tl-item { position: relative; width: 100%; display: flex; align-items: center; margin: 15px 0; }
+        .tl-node { width: 50px; height: 50px; border-radius: 50%; z-index: 2; border: 4px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; }
+
+        /* 対比・カード */
+        .comp-box { flex: 1; border-radius: 24px; padding: 30px; display: flex; flex-direction: column; align-items: center; height: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .bad-card { background: #fef2f2; border: 2px solid #fecaca; }
+        .good-card { background: #f0fdf4; border: 2px solid #bbf7d0; }
+        .res-badge { width: 100%; padding: 15px; border-radius: 12px; margin-top: auto; color: white; font-weight: 900; text-align: center; font-size: 24px; }
+
+        /* スパイラル・積み上げ等 */
+        .stack-container { display: flex; flex-direction: column-reverse; align-items: center; gap: 8px; width: 100%; }
+        .stack-block { width: 280px; height: 55px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* 4象限 */
+        .quad-container { position: relative; width: 450px; height: 450px; background: #fff; border: 3px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .quad-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed #cbd5e1; padding: 20px; }
+        .qc-active { background: #fffbeb; border: 6px solid #f59e0b; z-index: 5; transform: scale(1.05); color: #92400e; font-weight: 900; }
+
+    </style>
+</head>
+<body>
+
+    <div id="presentation-viewport">
+
+        <!-- Slide 1: Title -->
+        <div class="slide active bg-navy" id="s1" style="justify-content:center; align-items:center; text-align:center;">
+            <h1 style="font-size: 68px; font-weight: 900; line-height: 1.4;">「頑張りすぎ」から抜け出す！<br><span class="accent-blue">「3つの健康」で作る新しい習慣</span></h1>
+            <div style="width: 120px; height: 6px; background: #87CEFA; margin: 40px 0; border-radius: 3px;"></div>
+            <p style="font-size: 32px; font-weight: 700; letter-spacing: 0.2em;">肉体 ・ 精神 ・ 社会</p>
+            <div style="display:flex; gap:60px; margin-top:50px;">
+                <div style="text-align:center;"><div style="width:100px; height:100px; border:2px solid #87CEFA; border-radius:50%; display:grid; place-items:center; font-size:40px; color:#87CEFA; margin-bottom:10px;"><i class="fa-solid fa-child-reaching"></i></div><span>肉体</span></div>
+                <div style="text-align:center;"><div style="width:100px; height:100px; border:2px solid #87CEFA; border-radius:50%; display:grid; place-items:center; font-size:40px; color:#87CEFA; margin-bottom:10px;"><i class="fa-solid fa-brain"></i></div><span>精神</span></div>
+                <div style="text-align:center;"><div style="width:100px; height:100px; border:2px solid #87CEFA; border-radius:50%; display:grid; place-items:center; font-size:40px; color:#87CEFA; margin-bottom:10px;"><i class="fa-solid fa-users"></i></div><span>社会</span></div>
+            </div>
+        </div>
+
+        <!-- Slide 2: WHO Definition -->
+        <div class="slide" id="s2">
+            <h2 class="section-badge badge-phys" style="color:#1F4E79; border-color:#1F4E79;">健康の定義</h2>
+            <div class="content-2col">
+                <div class="col-left">
+                    <p class="keyword-main" style="font-size:60px;">健康 ＝ <br><span style="font-size:40px;">肉体 ＋ 精神 ＋ 社会</span></p>
+                    <div style="margin-top:40px; background:#f8fafc; padding:25px; border-radius:20px; border-left:10px solid #ef4444;">
+                        <p style="font-size:24px; font-weight:700; color:#94a3b8;">❌ 「病気でないこと」ではない</p>
+                    </div>
+                    <div style="margin-top:20px; background:#e0f2fe; padding:25px; border-radius:20px; border-left:10px solid #0ea5e9;">
+                        <p style="font-size:24px; font-weight:900; color:#1F4E79;">✅ すべてが満たされたポジティブな状態</p>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <!-- ベン図 -->
+                    <div style="position:relative; width:400px; height:400px;">
+                        <div style="position:absolute; width:250px; height:250px; border-radius:50%; background:rgba(74,222,128,0.4); top:0; left:75px; mix-blend-mode:multiply;"></div>
+                        <div style="position:absolute; width:250px; height:250px; border-radius:50%; background:rgba(96,165,250,0.4); bottom:0; left:0; mix-blend-mode:multiply;"></div>
+                        <div style="position:absolute; width:250px; height:250px; border-radius:50%; background:rgba(192,132,252,0.4); bottom:0; right:0; mix-blend-mode:multiply;"></div>
+                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#1F4E79; color:#fff; padding:15px 35px; border-radius:50px; font-weight:900; font-size:32px;">健康</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Work 1 -->
+        <div class="slide" id="s3">
+            <h2 class="section-badge badge-phys" style="color:#1F4E79; border-color:#1F4E79;">ワーク①</h2>
+            <p class="keyword-main" style="font-size:50px; margin-bottom:30px;">自分の課題を書き出す</p>
+            <div style="display:flex; gap:20px; flex-grow:1;">
+                <div style="flex:1; background:#dcfce7; padding:25px; border-radius:20px; display:flex; flex-direction:column;">
+                    <p style="font-weight:900; font-size:28px; color:#166534;"><i class="fa-solid fa-child-reaching"></i> 肉体</p>
+                    <div class="wb-input"></div>
+                </div>
+                <div style="flex:1; background:#dbeafe; padding:25px; border-radius:20px; display:flex; flex-direction:column;">
+                    <p style="font-weight:900; font-size:28px; color:#1e40af;"><i class="fa-solid fa-brain"></i> 精神</p>
+                    <div class="wb-input"></div>
+                </div>
+                <div style="flex:1; background:#f3e8ff; padding:25px; border-radius:20px; display:flex; flex-direction:column;">
+                    <p style="font-weight:900; font-size:28px; color:#6b21a8;"><i class="fa-solid fa-users"></i> 社会</p>
+                    <div class="wb-input"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Section 1 Intro -->
+        <div class="slide bg-phys-intro" id="s4" style="justify-content:center; align-items:center; text-align:center;">
+            <div style="font-size:120px; color:#4ade80; margin-bottom:30px;"><i class="fa-solid fa-child-reaching"></i></div>
+            <p style="font-size:20px; font-weight:700; border:2px solid #4ade80; padding:5px 20px; border-radius:50px; color:#4ade80; margin-bottom:20px;">SECTION 1</p>
+            <h1 style="font-size:80px; font-weight:900; line-height:1.2;">頑張るな。<br><span style="color:#4ade80;">仕組みを作れ。</span></h1>
+            <p style="font-size:28px; margin-top:30px; opacity:0.8;">休養・食事・運動の3つは連動している</p>
+        </div>
+
+        <!-- Slide 5: Sleep Steps -->
+        <div class="slide" id="s5">
+            <div class="section-badge badge-phys">肉体的健康：休養</div>
+            <div class="content-2col">
+                <div class="col-left">
+                    <p style="font-size:40px; color:#64748b; font-weight:700;">起きる時間より</p>
+                    <h2 class="keyword-main" style="font-size:72px;">寝る段取り</h2>
+                </div>
+                <div class="col-right">
+                    <div class="tl-line"></div>
+                    <div style="width:100%; display:flex; flex-direction:column; justify-content:space-between; height:90%;">
+                        <div class="tl-item"><div style="flex:1; text-align:right; padding-right:40px; font-size:36px; font-weight:900;">19:00</div><div class="tl-node" style="background:#f97316;"><i class="fa-solid fa-utensils"></i></div><div style="flex:1; padding-left:40px; font-size:24px; font-weight:700;">夕食</div></div>
+                        <div class="tl-item"><div style="flex:1; text-align:right; padding-right:40px; font-size:36px; font-weight:900;">20:30</div><div class="tl-node" style="background:#0ea5e9;"><i class="fa-solid fa-bath"></i></div><div style="flex:1; padding-left:40px; font-size:24px; font-weight:700;">入浴 <small style="display:block; color:#ef4444;">就寝90分前</small></div></div>
+                        <div class="tl-item"><div style="flex:1; text-align:right; padding-right:40px; font-size:36px; font-weight:900;">22:00</div><div class="tl-node" style="background:#8b5cf6;"><i class="fa-solid fa-bed"></i></div><div style="flex:1; padding-left:40px; font-size:24px; font-weight:700;">就寝</div></div>
+                        <div class="tl-item"><div style="flex:1; text-align:right; padding-right:40px; font-size:36px; font-weight:900;">06:00</div><div class="tl-node" style="background:#eab308;"><i class="fa-solid fa-sun"></i></div><div style="flex:1; padding-left:40px; font-size:32px; font-weight:900; color:#eab308;">起床</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 5min Break -->
+        <div class="slide bg-navy" id="s6">
+            <div class="section-badge badge-phys">肉体的健康：休養</div>
+            <div class="content-2col">
+                <div class="col-left" style="display:flex; align-items:baseline; justify-content:center;">
+                    <span style="font-size:300px; font-weight:900; line-height:1;">5</span>
+                    <span style="font-size:80px; font-weight:900; color:#87CEFA; margin-left:10px;">min</span>
+                </div>
+                <div class="col-right" style="flex-direction:column; align-items:flex-start; border-left:2px solid rgba(255,255,255,0.2); padding-left:50px;">
+                    <h2 style="font-size:64px; font-weight:900; line-height:1.2;">5分<br><span class="accent-blue">目を閉じるだけ</span></h2>
+                    <div style="margin-top:40px; background:rgba(0,0,0,0.2); padding:30px; border-radius:20px; width:100%;">
+                        <p style="font-size:24px; margin-bottom:20px;"><i class="fa-solid fa-arrow-trend-down" style="color:#87CEFA;"></i> 睡眠圧（アデノシン）低減</p>
+                        <p style="font-size:24px;"><i class="fa-solid fa-arrow-trend-up" style="color:#fde047;"></i> 判断力・生産性の回復</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Choco Contrast -->
+        <div class="slide" id="s7">
+            <div class="section-badge badge-phys">肉体的健康：食事</div>
+            <h2 class="keyword-main" style="font-size:50px; margin-bottom:40px;">チョコを<span class="accent-blue">変えるだけ</span></h2>
+            <div class="content-2col" style="gap:25px;">
+                <div class="comp-box bad-card">
+                    <p style="font-size:32px; font-weight:900; color:#b91c1c;">ミルクチョコ</p>
+                    <div style="height:150px; width:100%; background:rgba(255,255,255,0.5); border-radius:15px; margin:20px 0; display:grid; place-items:center;">
+                        <svg width="200" height="100"><path d="M 10,90 Q 50,10 90,90 T 170,90" fill="none" stroke="#ef4444" stroke-width="6"/></svg>
+                    </div>
+                    <div class="res-badge" style="background:#ef4444;">30分後に眠気</div>
+                </div>
+                <div class="comp-box good-card">
+                    <p style="font-size:32px; font-weight:900; color:#15803d;">ハイカカオ</p>
+                    <div style="height:150px; width:100%; background:rgba(255,255,255,0.5); border-radius:15px; margin:20px 0; display:grid; place-items:center;">
+                        <svg width="200" height="100"><path d="M 10,60 L 190,60" fill="none" stroke="#22c55e" stroke-width="6"/></svg>
+                    </div>
+                    <div class="res-badge" style="background:#22c55e;">集中力持続</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Chewing -->
+        <div class="slide" id="s8">
+            <div class="section-badge badge-phys">肉体的健康：食事</div>
+            <div class="content-2col">
+                <div class="col-left" style="border-right: 2px dashed #cbd5e1; height:80%; display:flex; flex-direction:column; justify-content:center;">
+                    <p style="font-size:48px; font-weight:900; color:#1F4E79;">1口</p>
+                    <div style="display:flex; align-items:baseline;">
+                        <span style="font-size:240px; font-weight:900; color:#87CEFA; line-height:1;">30</span>
+                        <span style="font-size:60px; font-weight:700;">回</span>
+                    </div>
+                </div>
+                <div class="col-right" style="flex-direction:column; align-items:flex-start; padding-left:40px; gap:30px;">
+                    <div style="display:flex; align-items:center; gap:20px;"><div style="width:60px; height:60px; background:#3b82f6; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:30px;"><i class="fa-solid fa-lightbulb"></i></div><p style="font-size:24px; font-weight:700;">集中力・記憶力向上</p></div>
+                    <div style="display:flex; align-items:center; gap:20px;"><div style="width:60px; height:60px; background:#22c55e; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:30px;"><i class="fa-solid fa-weight-scale"></i></div><p style="font-size:24px; font-weight:700;">肥満防止（満腹ホルモン）</p></div>
+                    <div style="display:flex; align-items:center; gap:20px;"><div style="width:60px; height:60px; background:#f97316; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:30px;"><i class="fa-solid fa-clock"></i></div><p style="font-size:24px; font-weight:700;">食事 15分 → 20分</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Walking -->
+        <div class="slide" id="s9">
+            <div class="section-badge badge-phys">肉体的健康：運動</div>
+            <div class="content-2col">
+                <div class="col-left">
+                    <h2 style="font-size:60px; font-weight:900; color:#1F4E79; margin-bottom:40px;">移動を歩きに<br><span class="accent-blue">変えるだけ</span></h2>
+                    <p style="font-size:24px; font-weight:700; color:#475569; margin-bottom:20px;">BDNF分泌で脳機能を強化</p>
+                    <div style="background:#f8fafc; padding:20px; border-radius:15px; border-left:8px solid #1F4E79;">ジョブズの「歩き会議」も1日10分から。</div>
+                </div>
+                <div class="col-right">
+                    <div style="width:100%; height:450px; background:#f1f5f9; border-radius:24px; position:relative; overflow:hidden;">
+                        <div style="position:absolute; bottom:20px; left:20px; font-size:220px; color:#1F4E79;"><i class="fa-solid fa-person-walking"></i></div>
+                        <div style="position:absolute; top:40px; right:40px; font-size:140px; color:#f59e0b; text-align:center;"><i class="fa-solid fa-brain"></i><p style="font-size:24px; font-weight:900;">脳の進化</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Morning Run -->
+        <div class="slide" id="s10">
+            <div class="section-badge badge-phys">肉体的健康：運動</div>
+            <p style="font-size:40px; color:#64748b; font-weight:700;">朝ランで</p>
+            <h2 class="keyword-main" style="font-size:72px; margin-bottom:40px;"><span class="accent-blue">1日</span>が変わる</h2>
+            <div style="display:flex; gap:25px; width:100%;">
+                <div style="flex:1; background:#ffedd5; padding:30px; border-radius:20px; text-align:center;"><i class="fa-solid fa-sun" style="font-size:60px; color:#ea580c;"></i><p style="font-size:22px; font-weight:900; margin-top:15px;">セロトニン(朝日)</p></div>
+                <div style="flex:1; background:#fee2e2; padding:30px; border-radius:20px; text-align:center;"><i class="fa-solid fa-fire" style="font-size:60px; color:#dc2626;"></i><p style="font-size:22px; font-weight:900; margin-top:15px;">脂肪燃焼(空腹)</p></div>
+                <div style="flex:1; background:#dbeafe; padding:30px; border-radius:20px; text-align:center;"><i class="fa-solid fa-brain" style="font-size:60px; color:#2563eb;"></i><p style="font-size:22px; font-weight:900; margin-top:15px;">午前の集中力</p></div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Identity -->
+        <div class="slide" id="s11">
+            <div class="section-badge badge-phys">肉体的健康：習慣</div>
+            <h2 class="keyword-main" style="font-size:54px; margin-bottom:30px;">「走る人」に<span class="accent-blue">なる</span></h2>
+            <div class="content-2col" style="gap:40px;">
+                <div class="comp-box bad-card">
+                    <p style="font-size:28px; font-weight:900; color:#b91c1c;">行動目標</p>
+                    <div style="background:#fff; padding:15px 30px; border-radius:30px; margin:20px 0; font-size:22px; font-weight:700;">「毎日30分走る」</div>
+                    <div style="font-size:100px; color:#ef4444;"><i class="fa-solid fa-cubes-stacked"></i></div>
+                    <div class="res-badge" style="background:#ef4444;">続かない</div>
+                </div>
+                <div class="comp-box good-card">
+                    <p style="font-size:28px; font-weight:900; color:#15803d;">アイデンティティー</p>
+                    <div style="background:#fff; padding:15px 30px; border-radius:30px; margin:20px 0; font-size:22px; font-weight:900; color:#1F4E79;">「私は走る人だ」</div>
+                    <div style="font-size:100px; color:#22c55e;"><i class="fa-solid fa-user-check"></i></div>
+                    <div class="res-badge" style="background:#22c55e;">続く</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Physical Summary -->
+        <div class="slide" id="s12">
+            <div class="section-badge badge-phys">肉体的健康：まとめ</div>
+            <div class="content-2col">
+                <div class="col-left"><h2 class="keyword-main" style="font-size:72px;">ギャップに<br><span class="accent-blue">目を向ける</span></h2></div>
+                <div class="col-right" style="flex-direction:column; gap:15px; align-items:stretch;">
+                    <div style="background:#1F4E79; color:#fff; border-radius:15px; padding:25px; font-size:26px; font-weight:900;">1. 理想の姿を描く</div>
+                    <div style="border:3px solid #22c55e; border-radius:15px; padding:20px; font-size:24px; font-weight:900; color:#15803d; border-left-width:15px;">2. 原因をアイデンティティーで考える</div>
+                    <div style="background:#fffbeb; border:5px solid #f59e0b; border-radius:15px; padding:35px; font-size:44px; font-weight:900; color:#92400e; transform:scale(1.05); text-align:center;">3. 一歩目だけ決める</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Work 2 -->
+        <div class="slide" id="s13">
+            <h2 style="font-size:28px; color:#4ade80; font-weight:900;">ワーク②</h2>
+            <p style="font-size:56px; font-weight:900; color:#1F4E79;">頑張らない<span class="accent-blue">解決策を書く</span></p>
+            <div style="background:#1F4E79; color:#fff; padding:12px 40px; border-radius:50px; display:inline-block; font-size:26px; margin:20px 0; font-weight:900;"><i class="fa-solid fa-stopwatch" style="color:#fde047;"></i> 10分以内でできること</div>
+            <div class="wb-input" style="background:#f0fdf4; border:3px dashed #86efac; border-radius:24px;"></div>
+        </div>
+
+        <!-- Slide 14: Section 2 Intro -->
+        <div class="slide bg-ment-intro" id="s14" style="justify-content:center; align-items:center; text-align:center;">
+            <div style="font-size: 140px; color: #C084FC; margin-bottom:20px;"><i class="fa-solid fa-brain"></i></div>
+            <div style="font-size: 30px; border-bottom: 2px solid #C084FC; color: #fff; margin: 10px 0; padding-bottom:10px; letter-spacing:0.2em; font-weight:900;">自己効力感</div>
+            <h1 style="font-size: 84px; font-weight: 900; line-height:1.2;">「どうせ無理」は<br><span style="color: #C084FC;">脳の問題だ</span></h1>
+            <p style="font-size: 32px; margin-top: 30px; color: #E2E8F0; background:rgba(0,0,0,0.2); padding:10px 60px; border-radius:50px;">怠けでも性格でもない</p>
+        </div>
+
+        <!-- Slide 15: Learned Helplessness -->
+        <div class="slide" id="s15">
+            <div class="section-badge badge-ment">精神分科：無気力</div>
+            <div class="content-2col">
+                <div class="col-left">
+                    <p style="font-size:48px; color:#64748b; font-weight:700;">無気力は</p>
+                    <h2 class="keyword-main" style="font-size:72px; line-height:1.2;">学習された<br><span style="color:#ef4444;">状態</span>だ</h2>
+                </div>
+                <div class="col-right" style="flex-direction:column; gap:10px; align-items:stretch;">
+                    <div style="background:#fef2f2; border:2px solid #fecaca; padding:15px; border-radius:10px; font-weight:900;">1. 回避不能ストレス</div>
+                    <div style="background:#fee2e2; border:2px solid #fca5a5; padding:15px; border-radius:10px; font-weight:900; margin-left:10%;">2. 制御不能感</div>
+                    <div style="background:#fecaca; border:2px solid #f87171; padding:15px; border-radius:10px; font-weight:900; margin-left:20%;">3. 脳が「無理」を学習</div>
+                    <div style="background:#ef4444; color:white; padding:20px; border-radius:10px; font-weight:900; margin-left:30%; font-size:28px;">4. 無気力状態</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Knowledge vs Practice -->
+        <div class="slide" id="s16">
+            <div class="section-badge badge-ment">精神的健康：学習</div>
+            <h2 class="keyword-main" style="font-size:56px; text-align:center; margin-bottom:40px;">わかる <span style="color:#ef4444; font-size:80px; vertical-align:middle;">&ne;</span> できる</h2>
+            <div class="content-2col" style="gap:40px;">
+                <div class="comp-box" style="background:#eff6ff; border:2px solid #bfdbfe;">
+                    <i class="fa-solid fa-book" style="font-size:80px; color:#3b82f6; margin-bottom:20px;"></i>
+                    <p style="font-size:28px; font-weight:900; color:#1e3a8a;">意味記憶</p>
+                    <div style="background:#fff; padding:15px 40px; border-radius:40px; margin:20px 0; font-size:24px; font-weight:700; color:#3b82f6; border:2px solid #3b82f6;">知っている</div>
+                </div>
+                <div class="comp-box" style="background:#f0fdf4; border:2px solid #bbf7d0;">
+                    <i class="fa-solid fa-bicycle" style="font-size:80px; color:#22c55e; margin-bottom:20px;"></i>
+                    <p style="font-size:28px; font-weight:900; color:#14532d;">手続き記憶</p>
+                    <div style="background:#fff; padding:15px 40px; border-radius:40px; margin:20px 0; font-size:24px; font-weight:900; color:#22c55e; border:2px solid #22c55e;">実際にできる</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Future Memory 1 -->
+        <div class="slide" id="s17">
+            <div class="section-badge badge-ment">精神的健康：未来記憶</div>
+            <div class="content-2col">
+                <div class="col-left">
+                    <p style="font-size:40px; color:#64748b; font-weight:700;">目標は</p>
+                    <h2 class="keyword-main" style="font-size:72px; line-height:1.2;">到達点ではなく<br><span style="color:#f59e0b;">方向性</span>だ</h2>
+                    <div style="margin-top:40px; background:#fffbeb; padding:20px; border-radius:15px; border-left:10px solid #f59e0b;">
+                        「痩せたい」→「好きなことができる体」へ
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div style="font-size:240px; color:#f59e0b; filter:drop-shadow(0 10px 20px rgba(245,158,11,0.2));"><i class="fa-solid fa-compass"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Baby Steps -->
+        <div class="slide" id="s18">
+            <div class="section-badge badge-ment">精神的健康：最小行動</div>
+            <h2 class="keyword-main" style="font-size:64px; margin-bottom:50px;">脳を騙す<br><span class="accent-blue">ベビーステップ</span></h2>
+            <div style="display:flex; flex-direction:column; gap:25px; align-items:center;">
+                <div style="width:80%; background:#f8fafc; border:2px solid #e2e8f0; padding:25px; border-radius:15px; font-size:32px; font-weight:900; text-align:center;">「5秒」で動き出す</div>
+                <i class="fa-solid fa-chevron-down" style="font-size:30px; color:#cbd5e1;"></i>
+                <div style="width:80%; background:#f0fdf4; border:3px solid #22c55e; padding:25px; border-radius:15px; font-size:32px; font-weight:900; text-align:center; color:#15803d;">一歩目を「10分以内」に</div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Stacking blocks -->
+        <div class="slide" id="s19">
+            <div class="section-badge badge-ment">精神的健康：自己効力感</div>
+            <div class="content-2col">
+                <div class="col-left">
+                    <p style="font-size:40px; color:#64748b; font-weight:700;">小さな</p>
+                    <h2 class="keyword-main" style="font-size:72px;">「できた」を<br><span style="color:#22c55e;">積み上げる</span></h2>
+                    <p style="margin-top:30px; font-size:22px; color:#475569;">目標を最小化し、言語化する</p>
+                </div>
+                <div class="col-right">
+                    <div class="stack-container">
+                        <div class="stack-block" style="background:#bbf7d0; width:300px;">できた！</div>
+                        <div class="stack-block" style="background:#86efac; width:280px;">できた！</div>
+                        <div class="stack-block" style="background:#4ade80; width:260px;">できた！</div>
+                        <div class="stack-block" style="background:#22c55e; width:240px;">できた！</div>
+                        <div class="stack-block" style="background:#f59e0b; height:80px; transform:scale(1.1); font-size:28px;">自信</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Work 3 -->
+        <div class="slide" id="s20">
+            <h2 style="font-size: 28px; color: #C084FC; font-weight: 900;">ワーク③</h2>
+            <p style="font-size: 56px; font-weight: 900; color: #1F4E79;">最小アクションを<span class="accent-blue">決める</span></p>
+            <div style="flex-grow:1; display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <div style="flex:1; background-color:#f3e8ff; border:3px dashed #c084fc; border-radius:24px; padding:20px;">① 理想の状態（方向性）</div>
+                <div style="text-align:center; font-size:30px; color:#cbd5e1;"><i class="fa-solid fa-circle-arrow-down"></i></div>
+                <div style="flex:1; background-color:#f0fdf4; border:3px dashed #4ade80; border-radius:24px; padding:20px;">② 絶対に失敗しない最小行動</div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Section 3 Intro -->
+        <div class="slide bg-soc-intro" id="s21" style="justify-content:center; align-items:center; text-align:center;">
+            <div style="position:relative; width:300px; height:300px; margin-bottom:30px;">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:120px; height:120px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#7B1D1D; font-size:36px; font-weight:900;">環境</div>
+                <div style="font-size:50px; color:rgba(255,255,255,0.4);"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <h1 style="font-size: 72px; font-weight: 900; line-height:1.3;">環境は<br><span style="color:#fca5a5;">自分たちで作れる</span></h1>
+            <p style="font-size: 28px; margin-top: 20px; opacity:0.8;">心理的安全性（Edmondson 1999）</p>
+        </div>
+
+        <!-- Slide 22: 4-Quadrant -->
+        <div class="slide" id="s22">
+            <div class="section-badge badge-soc">社会的健康：仕事</div>
+            <div class="content-2col">
+                <div class="col-left"><p style="font-size:40px; color:#64748b; font-weight:700;">今の自分は</p><h2 class="keyword-main" style="font-size:72px;">どの<span style="color:#f59e0b;">象限</span>？</h2></div>
+                <div class="col-right">
+                    <div class="quad-container">
+                        <div class="quad-cell">キャリア</div>
+                        <div class="quad-cell qc-active">コーリング<br><i class="fa-solid fa-crown" style="font-size:40px; margin-top:10px;"></i></div>
+                        <div class="quad-cell">ジョブ</div>
+                        <div class="quad-cell">義務</div>
+                        <div style="position:absolute; top:-40px; left:50%; transform:translateX(-50%); font-weight:900; color:#64748b;">好き</div>
+                        <div style="position:absolute; right:-80px; top:50%; transform:translateY(-50%); font-weight:900; color:#64748b;">目的あり</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Job Crafting -->
+        <div class="slide" id="s23">
+            <div class="section-badge badge-soc">社会的健康：仕事</div>
+            <h2 class="keyword-main" style="font-size:54px; margin-bottom:40px;">仕事を<span class="accent-blue">自分で作り変える</span></h2>
+            <div style="display:flex; gap:30px; width:100%;">
+                <div style="flex:1; background:#eff6ff; padding:25px; border-radius:20px; text-align:center; border-bottom:8px solid #3b82f6;"><i class="fa-solid fa-lightbulb" style="font-size:50px; color:#3b82f6;"></i><p style="font-weight:900; font-size:24px; margin-top:15px;">① 認知 C</p></div>
+                <div style="flex:1; background:#f0fdf4; padding:25px; border-radius:20px; text-align:center; border-bottom:8px solid #22c55e;"><i class="fa-solid fa-screwdriver-wrench" style="font-size:50px; color:#22c55e;"></i><p style="font-weight:900; font-size:24px; margin-top:15px;">② 作業 C</p></div>
+                <div style="flex:1; background:#fff7ed; padding:25px; border-radius:20px; text-align:center; border-bottom:8px solid #f97316;"><i class="fa-solid fa-comments" style="font-size:50px; color:#f97316;"></i><p style="font-weight:900; font-size:24px; margin-top:15px;">③ 関係 C</p></div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Creative Time -->
+        <div class="slide" id="s24">
+            <div class="section-badge badge-soc">社会的健康：心理的安全性</div>
+            <h2 class="keyword-main" style="font-size:64px; margin-bottom:50px;">待機の時間を<br><span style="color:#22c55e;">実験</span>の時間に</h2>
+            <div style="display:flex; flex-direction:column; gap:15px; align-items:stretch;">
+                <div style="background:#fee2e2; padding:18px; border-radius:12px; font-weight:900; font-size:24px; border-left:10px solid #ef4444;">1. 企画案を出すだけでOK</div>
+                <div style="background:#ffedd5; padding:18px; border-radius:12px; font-weight:900; font-size:24px; margin-left:10%; border-left:10px solid #f97316;">2. 報告は月1回の定例会</div>
+                <div style="background:#f0fdf4; border:5px solid #22c55e; padding:30px; border-radius:15px; font-weight:900; margin-left:20%; font-size:40px; color:#15803d; text-align:center;">3. 実際にやらなくても良い</div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Wall vs Bridge -->
+        <div class="slide" id="s25">
+            <div class="section-badge badge-soc">社会的健康：境界線</div>
+            <h2 class="keyword-main" style="font-size:56px; text-align:center; margin-bottom:40px;">断るより<span style="color:#22c55e;">提案する</span></h2>
+            <div class="content-2col" style="gap:30px;">
+                <div class="comp-box bad-card">
+                    <i class="fa-solid fa-border-all" style="font-size:100px; color:#ef4444; margin-bottom:20px;"></i>
+                    <p style="font-size:32px; font-weight:900; color:#ef4444;">❌ 断る</p>
+                    <div style="background:#fff; padding:15px 40px; border-radius:30px; margin-top:20px; font-weight:700;">「できません」</div>
+                </div>
+                <div class="comp-box good-card">
+                    <i class="fa-solid fa-archway" style="font-size:100px; color:#22c55e; margin-bottom:20px;"></i>
+                    <p style="font-size:32px; font-weight:900; color:#22c55e;">✅ 提案する</p>
+                    <div style="background:#fff; padding:15px 40px; border-radius:30px; margin-top:20px; font-weight:700;">「これならできます」</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: If-then Work -->
+        <div class="slide" id="s26">
+            <h2 style="font-size:28px; color:#f97316; font-weight:900;">ワーク④</h2>
+            <p style="font-size:56px; font-weight:900; color:#1F4E79; margin-bottom:40px;">if-thenルールを<span style="color:#f97316;">作る</span></p>
+            <div style="display:flex; gap:40px; flex-grow:1; align-items:stretch;">
+                <div style="flex:1; background:#fff7ed; border:3px dashed #fdba74; border-radius:24px; padding:30px; font-size:32px; font-weight:900; color:#ea580c;">if (条件)</div>
+                <div style="display:grid; place-items:center; font-size:50px; color:#cbd5e1;"><i class="fa-solid fa-arrow-right"></i></div>
+                <div style="flex:1; background:#f0fdf4; border:3px dashed #86efac; border-radius:24px; padding:30px; font-size:32px; font-weight:900; color:#16a34a;">then (行動)</div>
+            </div>
+        </div>
+
+        <!-- Slide 27: Domino Habit -->
+        <div class="slide" id="s27">
+            <div class="section-badge badge-soc">社会的健康：継続</div>
+            <div class="content-2col">
+                <div class="col-left"><h2 class="keyword-main" style="font-size:72px;">入り口を<br><span class="accent-blue">設計する</span></h2></div>
+                <div class="col-right" style="gap:20px; padding-bottom:50px;">
+                    <div style="width:60px; height:200px; background:#1F4E79; border-radius:10px; transform:rotate(15deg);"></div>
+                    <div style="width:60px; height:200px; background:#1F4E79; border-radius:10px; transform:rotate(45deg);"></div>
+                    <div style="width:60px; height:200px; background:#f59e0b; border-radius:10px; transform:rotate(75deg);"></div>
+                    <p style="position:absolute; bottom:0; font-weight:900; color:#f59e0b; font-size:24px;">1日1%の改善が複利で重なる</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 28: Final Work -->
+        <div class="slide" id="s28">
+            <h2 style="font-size:28px; color:#f97316; font-weight:900;">ワーク⑤</h2>
+            <p style="font-size:56px; font-weight:900; color:#1F4E79; margin-bottom:20px;">明日からの<span style="color:#f97316;">習慣を決める</span></p>
+            <div style="display:flex; flex-direction:column; gap:12px; flex-grow:1;">
+                <div style="flex:1; background:#eff6ff; border:2px dashed #3b82f6; border-radius:15px; padding:20px;">① なりたい自分（目標・星）</div>
+                <div style="flex:1; background:#fff7ed; border:2px dashed #f97316; border-radius:15px; padding:20px;">② きっかけ（入り口・鍵）</div>
+                <div style="flex:1; background:#f0fdf4; border:2px dashed #22c55e; border-radius:15px; padding:20px;">③ 最小行動（10分以内・足跡）</div>
+            </div>
+            <div style="text-align:center; margin-top:20px; font-size:24px; font-weight:900; color:#1F4E79;"><i class="fa-solid fa-comments"></i> 隣の人と共有しましょう！</div>
+        </div>
+
+        <!-- Slide 29: Overall Summary -->
+        <div class="slide" id="s29">
+            <h2 class="section-badge" style="color:#1F4E79; border:2px solid #1F4E79;">全体まとめ</h2>
+            <p style="font-size: 56px; font-weight: 900; color: #1F4E79; text-align:center; margin-bottom:40px;">3つの健康で<br><span class="accent-blue">無理のない全力へ</span></p>
+            <div style="display:flex; gap:30px; width:100%;">
+                <div style="flex:1; background:#f0fdf4; padding:30px; border-radius:24px; text-align:center; border-top:12px solid #4ade80;"><p style="font-weight:900; font-size:28px; color:#1F4E79;">肉体</p><p style="margin-top:20px; font-size:20px;">仕組みで整える</p></div>
+                <div style="flex:1; background:#f5f3ff; padding:30px; border-radius:24px; text-align:center; border-top:12px solid #c084fc;"><p style="font-weight:900; font-size:28px; color:#1F4E79;">精神</p><p style="margin-top:20px; font-size:20px;">脳科学で動く</p></div>
+                <div style="flex:1; background:#fef2f2; padding:30px; border-radius:24px; text-align:center; border-top:12px solid #ef4444;"><p style="font-weight:900; font-size:28px; color:#1F4E79;">社会</p><p style="margin-top:20px; font-size:20px;">環境は自作する</p></div>
+            </div>
+            <div style="text-align:center; margin-top:50px; font-size:32px; font-weight:900; color:#f59e0b;">互いに支え合う循環</div>
+        </div>
+
+        <!-- Slide 30: Ending -->
+        <div class="slide bg-navy" id="s30" style="justify-content:center; align-items:center; text-align:center;">
+            <h1 style="font-size: 84px; font-weight: 900; line-height: 1.4;">いつからでも、<br><span style="color:#f59e0b;">人は変われる</span></h1>
+            <div style="width: 150px; height: 8px; background: #f59e0b; border-radius: 4px; margin: 50px 0;"></div>
+            <p style="font-size: 40px; font-weight: 700; color: rgba(255,255,255,0.7);">まず一歩だけ</p>
+            <p style="position:absolute; bottom:40px; right:60px; color:rgba(255,255,255,0.3); font-weight:700;">ご清聴ありがとうございました</p>
+        </div>
+
+    </div>
+
+    <!-- ナビゲーションUI -->
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn" title="前のスライド (←キー)"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="slide-number"><span id="currentNum">1</span> / <span id="totalNum">30</span></div>
+        <button class="nav-btn" id="nextBtn" title="次のスライド (→キー/スペース)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentNum = document.getElementById('currentNum');
+        const totalNum = document.getElementById('totalNum');
+        
+        let currentIdx = 0;
+        const total = slides.length;
+        totalNum.textContent = total;
+
+        function updateSlide() {
+            slides.forEach((slide, idx) => {
+                slide.classList.toggle('active', idx === currentIdx);
+                slide.style.display = (idx === currentIdx) ? 'flex' : 'none';
+            });
+            currentNum.textContent = currentIdx + 1;
+            prevBtn.disabled = currentIdx === 0;
+            nextBtn.disabled = currentIdx === total - 1;
+        }
+
+        prevBtn.addEventListener('click', () => { if (currentIdx > 0) { currentIdx--; updateSlide(); } });
+        nextBtn.addEventListener('click', () => { if (currentIdx < total - 1) { currentIdx++; updateSlide(); } });
+
+        // キーボード操作
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { if (currentIdx < total - 1) { currentIdx++; updateSlide(); } }
+            else if (e.key === 'ArrowLeft') { if (currentIdx > 0) { currentIdx--; updateSlide(); } }
+        });
+
+        // 画面スケーリング
+        function scalePresentation() {
+            const viewport = document.getElementById('presentation-viewport');
+            const scale = Math.min((window.innerWidth - 40) / 1280, (window.innerHeight - 100) / 720, 1);
+            viewport.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', scalePresentation);
+        window.onload = () => { updateSlide(); scalePresentation(); };
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Game</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>My Game</h1>
+      <p id="score-display">スコア: 0</p>
+    </header>
+
+    <main>
+      <!-- ゲームキャンバス or UI をここに追加 -->
+      <canvas id="game-canvas" width="800" height="600"></canvas>
+    </main>
+
+    <footer>
+      <button id="start-btn">ゲームスタート</button>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>

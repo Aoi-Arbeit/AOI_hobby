@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="360" viewBox="0 0 700 360">
+  <rect width="700" height="360" fill="#0d1520" rx="14"/>
+  <text x="350" y="42" font-family="Arial" font-size="19" font-weight="bold" fill="#eee" text-anchor="middle">習慣はドミノ倒し — きっかけが連鎖を生む</text>
+  <!-- domino pieces -->
+  
+    <rect x="60" y="190" width="55" height="80" rx="6" fill="#F18F01" opacity="0.85"/>
+    <text x="87" y="222" font-size="20" text-anchor="middle">🚿</text>
+    <text x="87" y="295" font-family="Arial" font-size="12" font-weight="bold" fill="#ccc" text-anchor="middle">ドライヤー</text>
+    <text x="87" y="315" font-family="Arial" font-size="10" fill="#556" text-anchor="middle">きっかけ</text>
+    <path d="M120,210 Q145,180 170,170" fill="none" stroke="#F18F01" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,3"/>
+  
+    <rect x="160" y="170" width="55" height="100" rx="6" fill="#E53935" opacity="0.85"/>
+    <text x="187" y="202" font-size="20" text-anchor="middle">📵</text>
+    <text x="187" y="295" font-family="Arial" font-size="12" font-weight="bold" fill="#ccc" text-anchor="middle">スマホ遠ざける</text>
+    <text x="187" y="315" font-family="Arial" font-size="10" fill="#556" text-anchor="middle">阻害除去</text>
+    <path d="M220,190 Q245,160 270,150" fill="none" stroke="#E53935" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,3"/>
+  
+    <rect x="270" y="150" width="55" height="120" rx="6" fill="#8E24AA" opacity="0.85"/>
+    <text x="297" y="182" font-size="20" text-anchor="middle">🛏️</text>
+    <text x="297" y="295" font-family="Arial" font-size="12" font-weight="bold" fill="#ccc" text-anchor="middle">ベッドへ</text>
+    <text x="297" y="315" font-family="Arial" font-size="10" fill="#556" text-anchor="middle">行動</text>
+    <path d="M330,170 Q355,140 380,130" fill="none" stroke="#8E24AA" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,3"/>
+  
+    <rect x="390" y="130" width="55" height="140" rx="6" fill="#1565C0" opacity="0.85"/>
+    <text x="417" y="162" font-size="20" text-anchor="middle">😴</text>
+    <text x="417" y="295" font-family="Arial" font-size="12" font-weight="bold" fill="#ccc" text-anchor="middle">就寝</text>
+    <text x="417" y="315" font-family="Arial" font-size="10" fill="#556" text-anchor="middle">目標</text>
+    <path d="M450,150 Q475,120 500,110" fill="none" stroke="#1565C0" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,3"/>
+  
+    <rect x="520" y="110" width="55" height="160" rx="6" fill="#2E7D32" opacity="0.85"/>
+    <text x="547" y="142" font-size="20" text-anchor="middle">☀️</text>
+    <text x="547" y="295" font-family="Arial" font-size="12" font-weight="bold" fill="#ccc" text-anchor="middle">早起き</text>
+    <text x="547" y="315" font-family="Arial" font-size="10" fill="#556" text-anchor="middle">結果</text>
+    
+  
+  <!-- ground -->
+  <line x1="40" y1="270" x2="660" y2="270" stroke="#223" stroke-width="2"/>
+  <!-- label -->
+  <text x="350" y="345" font-family="Arial" font-size="13" fill="#445" text-anchor="middle">気合ではなく、きっかけの設計で行動が自動的に連鎖する</text>
+</svg>

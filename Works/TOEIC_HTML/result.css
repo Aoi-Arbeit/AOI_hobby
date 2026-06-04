@@ -1,0 +1,85 @@
+/* --- レイアウト --- */
+body {
+    background-color: #f0f4f8;
+    color: #333;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* 画面中央に配置 */
+}
+
+main {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    padding: 40px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* --- タイトル --- */
+h1 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+h1::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: #007bff;
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+/* --- スコア表示エリア --- */
+.score-container {
+    margin: 40px 0;
+    padding: 30px;
+    background: #f8fbff;
+    border-radius: 15px;
+    border: 2px dashed #d1e3f8;
+}
+
+p {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+}
+
+#score-value {
+    display: block;
+    font-size: 3.5rem; /* スコアを大きく強調 */
+    color: #007bff;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+/* --- アクションボタン --- */
+.home-link {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 12px 40px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.home-link:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.home-link:active {
+    transform: translateY(0);
+}

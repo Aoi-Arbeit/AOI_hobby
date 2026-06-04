@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affinity ポスター作成ハンズオンガイド</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    background-color: #fcfaf8;
+    color: #27272a;
+}
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 320px;
+    max-height: 320px;
+}
+.fade-in {
+    animation: fadeIn 0.4s ease-in forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+</style>
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                brand: {
+                    50: '#f0fdfa',
+                    100: '#ccfbf1',
+                    500: '#14b8a6',
+                    600: '#0d9488',
+                    700: '#0f766e',
+                    900: '#134e4a',
+                },
+                accent: {
+                    500: '#f59e0b',
+                }
+            }
+        }
+    }
+}
+</script>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative pb-20">
+
+<!-- Chosen Palette: Warm Neutrals & Deep Teal -->
+<!-- Application Structure Plan: The application is designed as a linear yet interactive learning dashboard. It flows from basic knowledge (UI/Tools) to conceptual planning (Spec Framework), followed by a practical step-by-step interactive tab component for the Hands-on workflow. Finally, it culminates in a functional checklist that updates a progress chart. This structure was chosen because procedural memory is best built through clear, sequential understanding followed by repeatable, verifiable execution. The interactive elements (forms, tabs, checklists) transform passive reading into active participation. -->
+<!-- Visualization & Content Choices:
+1. Tool Overview -> Goal: Inform -> UI Cards with Unicode Icons -> Interaction: Hover effects -> Justification: Quick, scannable reference -> Library/Method: Tailwind Grid.
+2. Spec Framework -> Goal: Organize & Plan -> Interactive Form & Live Preview Card -> Interaction: Two-way binding (typing updates view) -> Justification: Shows how abstract thought translates to a concrete brief -> Library/Method: Vanilla JS + HTML.
+3. Document Setup & Layout -> Goal: Inform & Visualize -> CSS-based nested diagrams -> Interaction: Static but visually layered -> Justification: Explains Bleed/Margin without complex images -> Library/Method: Tailwind CSS borders and positioning. Confirming NO SVG.
+4. Workflow Progress -> Goal: Motivate & Track -> Doughnut Chart -> Interaction: Updates via Checklist toggles -> Justification: Gamifies the learning process and visually confirms "procedural memory" acquisition -> Library/Method: Chart.js Canvas.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<header class="bg-brand-900 text-white py-12 px-6 shadow-md relative overflow-hidden">
+    <div class="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex-1">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Affinity ポスター作成ハンズオン</h1>
+            <p class="text-brand-100 text-lg md:text-xl leading-relaxed max-w-2xl">
+                高度なデザイン知識がなくても、手順を踏めばプロ品質のポスターは構築できます。<br>
+                Affinity Designer / Publisher を使用して、情報を整理し、骨組みを作り、装飾を施す「手続き記憶」を定着させるためのインタラクティブ・ガイドです。
+            </p>
+        </div>
+        <div class="w-full md:w-80 bg-white/10 p-6 rounded-2xl backdrop-blur-sm border border-white/20 text-center">
+            <h3 class="text-sm font-semibold text-brand-50 mb-2 uppercase tracking-wider">学習・実践プログレス</h3>
+            <div class="chart-container h-48 max-h-48 w-48 mx-auto">
+                <canvas id="progressChart"></canvas>
+            </div>
+            <p id="progressText" class="mt-3 text-2xl font-bold text-white">0%</p>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-12 space-y-16">
+
+    <section id="section-tools" class="scroll-mt-10">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-brand-900 border-b-4 border-brand-500 inline-block pb-2 mb-4">1. 必須基本ツールとUI</h2>
+            <p class="text-gray-600">ポスター作成を始める前に、Affinity製品群で頻繁に使用する4つの基本機能を確認します。これらだけで全体の9割の作業が完結します。</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="text-4xl mb-4">📄</div>
+                <h3 class="text-xl font-bold mb-2">キャンバス設定</h3>
+                <p class="text-sm text-gray-600">ドキュメントの物理的なサイズ（A4など）、カラーモード（CMYK）、解像度（300dpi）、裁ち落としを管理する基盤ツール。</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="text-4xl mb-4">🔤</div>
+                <h3 class="text-xl font-bold mb-2">テキストツール</h3>
+                <p class="text-sm text-gray-600">フレームテキスト（長文用）とアーティスティックテキスト（見出し用）を使い分け、情報を配置します。</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="text-4xl mb-4">⬛</div>
+                <h3 class="text-xl font-bold mb-2">図形ツール</h3>
+                <p class="text-sm text-gray-600">長方形や円を描画します。レイアウトの骨組み（ブロック）作成や、画像のクリッピングマスクの土台として不可欠です。</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="text-4xl mb-4">🖼️</div>
+                <h3 class="text-xl font-bold mb-2">画像配置ツール</h3>
+                <p class="text-sm text-gray-600">外部の写真やイラスト素材をキャンバスにインポートし、適切なサイズと解像度で配置するツールです。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="section-spec" class="scroll-mt-10 bg-brand-50 p-8 rounded-3xl border border-brand-100">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-brand-900 border-b-4 border-brand-500 inline-block pb-2 mb-4">2. ポスター作成仕様書（フレームワーク）</h2>
+            <p class="text-gray-600">デザイン作業に入る前に、以下の項目を埋めるだけでポスターの骨格が定まります。機械的にレイアウトを行うための「地図」を作成しましょう。</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">(a) ターゲット層と目的 (5W1H)</label>
+                    <input type="text" id="input-target" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="例: 20代社会人向け、新規セミナーの集客">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">(b) メインメッセージ</label>
+                    <input type="text" id="input-message" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="例: 週末2時間で身につく、実践データ分析">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">(c) 必須要素（カンマ区切り）</label>
+                    <input type="text" id="input-elements" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="タイトル, 日時, 場所, 講師画像, 申込QR">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">(d) 情報を配置する優先順位</label>
+                    <select id="input-priority" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
+                        <option value="1. メインメッセージ > 2. 画像 > 3. 詳細情報">1. メインメッセージ &gt; 2. 画像 &gt; 3. 詳細情報（標準的）</option>
+                        <option value="1. 画像（インパクト） > 2. メインメッセージ > 3. 詳細">1. 画像（インパクト） &gt; 2. メインメッセージ &gt; 3. 詳細</option>
+                        <option value="1. 日時・場所 > 2. タイトル > 3. 画像">1. 日時・場所（告知重視） &gt; 2. タイトル &gt; 3. 画像</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-accent-500"></div>
+                <h3 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">仕様書プレビュー</h3>
+                <div class="space-y-4 text-sm">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">ターゲット/目的</span>
+                        <span id="preview-target" class="text-lg font-medium text-gray-800">未入力</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">メインメッセージ (最上段/最大文字)</span>
+                        <span id="preview-message" class="text-2xl font-bold text-brand-700">未入力</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">必須構成要素リスト</span>
+                        <div id="preview-elements" class="flex flex-wrap gap-2 mt-1">
+                            <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">未入力</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col mt-4 pt-4 border-t border-gray-100">
+                        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">視線誘導・優先順位ルール</span>
+                        <span id="preview-priority" class="text-md text-accent-500 font-bold">1. メインメッセージ > 2. 画像 > 3. 詳細情報</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="section-workflow" class="scroll-mt-10">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-brand-900 border-b-4 border-brand-500 inline-block pb-2 mb-4">3. ハンズオン・ワークフロー</h2>
+            <p class="text-gray-600">仕様書が完成したら、実際にAffinityを操作します。この4ステップを反復することで、手が勝手に動く「手続き記憶」が形成されます。</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="flex flex-col sm:flex-row border-b border-gray-200 overflow-x-auto">
+                <button class="tab-btn flex-1 py-4 px-6 text-center font-bold text-brand-700 bg-brand-50 border-b-2 border-brand-500 whitespace-nowrap transition" data-target="step1">Step 1: セットアップ</button>
+                <button class="tab-btn flex-1 py-4 px-6 text-center font-bold text-gray-500 hover:bg-gray-50 whitespace-nowrap transition" data-target="step2">Step 2: 骨組み作成</button>
+                <button class="tab-btn flex-1 py-4 px-6 text-center font-bold text-gray-500 hover:bg-gray-50 whitespace-nowrap transition" data-target="step3">Step 3: 装飾・階層化</button>
+                <button class="tab-btn flex-1 py-4 px-6 text-center font-bold text-gray-500 hover:bg-gray-50 whitespace-nowrap transition" data-target="step4">Step 4: 出力・確認</button>
+            </div>
+
+            <div class="p-8">
+                <div id="step1" class="tab-content fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">正確なドキュメントセットアップ</h3>
+                    <p class="mb-6 text-gray-600">印刷事故を防ぐため、最初に行う最も重要な設定です。</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 rounded-lg border-l-4 border-brand-500">
+                                <h4 class="font-bold text-lg">設定値リスト</h4>
+                                <ul class="list-disc list-inside mt-2 text-gray-700 space-y-1">
+                                    <li><strong>サイズ:</strong> A4 (210 x 297 mm) または A3</li>
+                                    <li><strong>カラー:</strong> CMYK (Japan Color 2001 Coated等)</li>
+                                    <li><strong>マージン (安全域):</strong> 四辺に 10〜15mm</li>
+                                    <li><strong>裁ち落とし (Bleed):</strong> 四辺に 3mm</li>
+                                </ul>
+                            </div>
+                            <p class="text-sm text-gray-500 bg-yellow-50 p-3 rounded">💡 裁ち落とし（塗り足し）がないと、印刷断裁時に端に白い隙間ができる原因になります。背景色や背景画像は必ず裁ち落とし線まで伸ばします。</p>
+                        </div>
+                        
+                        <div class="relative w-full h-64 bg-gray-100 flex items-center justify-center rounded-xl overflow-hidden border border-gray-300">
+                            <div class="absolute inset-4 border-2 border-red-500 flex items-start justify-center pt-2">
+                                <span class="text-red-500 text-xs font-bold bg-gray-100 px-1">裁ち落とし線 (Bleed 3mm)</span>
+                            </div>
+                            <div class="absolute inset-8 bg-white border border-gray-400 shadow-sm flex items-start justify-center pt-2">
+                                <span class="text-gray-500 text-xs font-bold">仕上がり線 (A4エッジ)</span>
+                            </div>
+                            <div class="absolute inset-16 border-2 border-dashed border-blue-400 flex items-center justify-center bg-blue-50/30">
+                                <span class="text-blue-600 text-xs font-bold px-4 text-center">マージン (安全域)<br>重要な文字やロゴは<br>この内側に収める</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step2" class="tab-content hidden fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">レイアウトの骨組み（ブロック配置）</h3>
+                    <p class="mb-6 text-gray-600">仕様書の優先順位に従い、グレーの図形とダミーテキストだけで画面を分割します。色や画像はまだ入れません。</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <ol class="list-decimal list-inside space-y-4 text-gray-700">
+                                <li class="font-medium"><strong>視線の流れを意識:</strong> Zの法則（左上→右上→左下→右下）に沿ってブロックを配置。</li>
+                                <li class="font-medium"><strong>メイン要素の場所確保:</strong> 最も伝えたいメッセージや画像を一番大きなブロックとして配置。</li>
+                                <li class="font-medium"><strong>余白（ホワイトスペース）の設計:</strong> ブロック同士の間に均等な隙間を空け、窮屈さを回避する。</li>
+                                <li class="font-medium"><strong>整列ツールを活用:</strong> Affinityの「配置タブ」を使い、ブロックの左揃え・中央揃えを厳密に合わせる。</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="w-full max-w-sm mx-auto h-[400px] bg-white border border-gray-300 p-4 relative shadow-sm flex flex-col gap-4">
+                            <div class="w-full h-1/4 bg-gray-200 flex items-center justify-center rounded">
+                                <span class="text-gray-500 font-bold">1. キャッチコピー (最大枠)</span>
+                            </div>
+                            <div class="w-full h-2/4 bg-gray-300 flex items-center justify-center rounded">
+                                <span class="text-gray-600 font-bold">2. メインビジュアル (画像枠)</span>
+                            </div>
+                            <div class="flex gap-4 h-1/4">
+                                <div class="w-2/3 bg-gray-200 flex items-center justify-center rounded">
+                                    <span class="text-gray-500 font-bold text-sm">3. 詳細情報・日時</span>
+                                </div>
+                                <div class="w-1/3 bg-gray-300 flex items-center justify-center rounded">
+                                    <span class="text-gray-600 font-bold text-sm">QR/ロゴ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step3" class="tab-content hidden fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">装飾と階層化の適用</h3>
+                    <p class="mb-6 text-gray-600">骨組みに対して、要素を流し込みデザインを仕上げていきます。</p>
+                    
+                    <div class="space-y-8">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-lg text-brand-700 mb-3">(a) 画像とクリッピングマスク</h4>
+                            <p class="text-sm text-gray-700 mb-3">Step 2で作った図形ブロックの上に画像を配置し、レイヤーパネルで画像を「図形の子レイヤー」にドラッグ＆ドロップします。これで図形の形に画像が切り抜かれます（マスク機能）。</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-lg text-brand-700 mb-3">(b) テキストの階層化（ジャンプ率）</h4>
+                            <p class="text-sm text-gray-700 mb-4">文字の大小差（ジャンプ率）と太さ（ウェイト）で、情報の重要度を視覚化します。</p>
+                            <div class="flex flex-col gap-3 bg-white p-4 rounded border border-gray-100">
+                                <div class="text-4xl font-extrabold text-gray-900 leading-none">タイトルは極太で最大に</div>
+                                <div class="text-xl font-bold text-gray-700 mt-2">見出しは一段小さく、太字で。</div>
+                                <div class="text-sm font-normal text-gray-600 leading-relaxed">本文は一番小さく、読みやすいレギュラーウェイトを使用します。この大小のコントラストが明確なほど、プロっぽい仕上がりになります。初心者は「差をつけすぎかな？」と思うくらいで丁度良いです。</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-lg text-brand-700 mb-3">(c) 失敗しないシンプル配色ルール (70:25:5)</h4>
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="w-16 h-16 bg-[#fcfaf8] border border-gray-300 rounded-full flex items-center justify-center font-bold text-xs text-gray-600">ベース<br>70%</div>
+                                <div class="w-16 h-16 bg-brand-600 rounded-full flex items-center justify-center font-bold text-xs text-white">メイン<br>25%</div>
+                                <div class="w-16 h-16 bg-accent-500 rounded-full flex items-center justify-center font-bold text-xs text-white">アクセント<br>5%</div>
+                            </div>
+                            <p class="text-sm text-gray-700 mt-2">使用する色は「背景となる薄い色」「ブランドを表すメイン色」「目立たせるためのアクセント色」の3色に絞ります。文字は濃いグレー（#333333等）を使用し、完全な黒は避けると垢抜けます。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step4" class="tab-content hidden fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">最終確認と印刷用書き出し</h3>
+                    <p class="mb-6 text-gray-600">デザインが完成したら、印刷所に入稿するための安全なデータを作成します。</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                            <h4 class="font-bold text-blue-900 mb-2">最終確認ポイント</h4>
+                            <ul class="list-disc list-inside text-sm text-blue-800 space-y-2">
+                                <li><strong>文字のカーニング:</strong> タイトルなど大きな文字の「字間」が不自然に空いていないか調整する（Alt + 左右矢印キー）。</li>
+                                <li><strong>レイヤー整理:</strong> 不要な非表示レイヤーを削除。テキストはグループ化しておく。</li>
+                                <li><strong>画像の解像度:</strong> リソースマネージャーを開き、配置画像が実寸で300dpi以上あるか確認。</li>
+                                <li><strong>カラーチェック:</strong> 意図せずRGBカラーの要素が混ざっていないか確認。</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-6 rounded-xl border border-green-100">
+                            <h4 class="font-bold text-green-900 mb-2">PDF書き出し設定</h4>
+                            <p class="text-sm text-green-800 mb-3">「ファイル > エクスポート」からPDFを選択し、以下の設定を必ず行います。</p>
+                            <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                                <li><strong>プリセット:</strong> PDF/X-1a または PDF/X-4（印刷所指定に従う）</li>
+                                <li>「詳細」ボタンをクリックし、以下にチェックを入れる：</li>
+                                <li class="ml-4">✅ <strong>裁ち落としを含める</strong></li>
+                                <li class="ml-4">✅ <strong>プリンターマークを含める（トンボ）</strong></li>
+                                <li>書き出したPDFを一度Acrobat等で開き、トンボと3mmの余分な画像（塗り足し）があるか目視確認する。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="section-checklist" class="scroll-mt-10 mb-20">
+        <div class="bg-brand-900 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
+            <div class="absolute top-[-50px] right-[-50px] w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
+            
+            <h2 class="text-3xl font-bold mb-2 relative z-10">手続き記憶化 チェックリスト</h2>
+            <p class="text-brand-100 mb-8 relative z-10">反復練習のためのワークフローです。作業が完了したらチェックを入れてください。</p>
+            
+            <div id="checklist-container" class="space-y-3 relative z-10">
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const checklistItems = [
+        { id: 'chk1', text: '仕様書(5W1H/メッセージ/要素/優先順位)をテキストで整理した' },
+        { id: 'chk2', text: '新規ドキュメントを作成 (A4等, CMYK, マージン設定, 裁ち落とし3mm)' },
+        { id: 'chk3', text: 'ガイドを引いて、マージン(安全域)を視覚化した' },
+        { id: 'chk4', text: 'グレーの図形ツールだけで、優先順位に従いレイアウトブロックを配置した' },
+        { id: 'chk5', text: '図形に対して画像を配置し、クリッピングマスクを適用した' },
+        { id: 'chk6', text: 'ダミーテキストを本番用に差し替えた' },
+        { id: 'chk7', text: 'フォントサイズとウェイトを調整し、明確なジャンプ率(階層化)を作った' },
+        { id: 'chk8', text: 'ベース、メイン、アクセントの3色ルールに基づき配色した' },
+        { id: 'chk9', text: '大きな文字のカーニング(字間調整)を行い、バランスを整えた' },
+        { id: 'chk10', text: 'PDF/Xフォーマットで、裁ち落とし・トンボを含めて書き出した' }
+    ];
+
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['完了', '未完了'],
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: ['#14b8a6', 'rgba(255, 255, 255, 0.2)'],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { animateScale: true, animateRotate: true },
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+
+    const updateProgress = () => {
+        const checkboxes = document.querySelectorAll('.workflow-checkbox');
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const totalCount = checkboxes.length;
+        const percentage = Math.round((checkedCount / totalCount) * 100);
+
+        document.getElementById('progressText').innerText = `${percentage}%`;
+        
+        chart.data.datasets[0].data = [percentage, 100 - percentage];
+        chart.update();
+
+        if(percentage === 100) {
+            document.getElementById('progressText').classList.add('text-accent-500');
+        } else {
+            document.getElementById('progressText').classList.remove('text-accent-500');
+        }
+    };
+
+    const container = document.getElementById('checklist-container');
+    checklistItems.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'glass-panel p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:bg-white/20 transition group';
+        
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = item.id;
+        input.className = 'workflow-checkbox w-6 h-6 rounded border-white/50 text-brand-500 focus:ring-brand-500 bg-transparent cursor-pointer';
+        input.addEventListener('change', () => {
+            if(input.checked) {
+                label.classList.add('line-through', 'text-white/50');
+            } else {
+                label.classList.remove('line-through', 'text-white/50');
+            }
+            updateProgress();
+        });
+
+        const label = document.createElement('label');
+        label.htmlFor = item.id;
+        label.className = 'flex-1 cursor-pointer font-medium text-white transition-all';
+        label.innerText = `[Step ${Math.floor(index/3) + 1}] ${item.text}`;
+
+        div.appendChild(input);
+        div.appendChild(label);
+        
+        div.addEventListener('click', (e) => {
+            if(e.target !== input) {
+                input.checked = !input.checked;
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+
+        container.appendChild(div);
+    });
+
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => {
+                t.classList.remove('text-brand-700', 'bg-brand-50', 'border-brand-500');
+                t.classList.add('text-gray-500', 'hover:bg-gray-50', 'border-transparent');
+                t.style.borderBottomWidth = '0px';
+            });
+            tab.classList.remove('text-gray-500', 'hover:bg-gray-50', 'border-transparent');
+            tab.classList.add('text-brand-700', 'bg-brand-50', 'border-brand-500');
+            tab.style.borderBottomWidth = '2px';
+
+            contents.forEach(c => c.classList.add('hidden'));
+            const targetId = tab.getAttribute('data-target');
+            document.getElementById(targetId).classList.remove('hidden');
+        });
+    });
+
+    const bindInputToPreview = (inputId, previewId, fallbackText, isList = false) => {
+        const inputEl = document.getElementById(inputId);
+        const previewEl = document.getElementById(previewId);
+
+        inputEl.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (isList) {
+                if(val === '') {
+                    previewEl.innerHTML = `<span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">${fallbackText}</span>`;
+                } else {
+                    const items = val.split(',').map(i => i.trim()).filter(i => i !== '');
+                    previewEl.innerHTML = items.map(item => `<span class="px-3 py-1 bg-brand-100 text-brand-800 rounded-full text-xs font-bold border border-brand-200">${item}</span>`).join('');
+                }
+            } else {
+                previewEl.innerText = val || fallbackText;
+                if(val) {
+                    previewEl.classList.remove('text-gray-400', 'text-gray-800');
+                    if(previewId === 'preview-message') {
+                        previewEl.classList.add('text-brand-700');
+                    } else if(previewId === 'preview-priority') {
+                        previewEl.classList.add('text-accent-500');
+                    } else {
+                         previewEl.classList.add('text-gray-900');
+                    }
+                } else {
+                     previewEl.classList.remove('text-brand-700', 'text-gray-900', 'text-accent-500');
+                     previewEl.classList.add('text-gray-400');
+                }
+            }
+        });
+    };
+
+    bindInputToPreview('input-target', 'preview-target', '未入力');
+    bindInputToPreview('input-message', 'preview-message', '未入力');
+    bindInputToPreview('input-elements', 'preview-elements', '未入力', true);
+
+    const prioritySelect = document.getElementById('input-priority');
+    const priorityPreview = document.getElementById('preview-priority');
+    prioritySelect.addEventListener('change', (e) => {
+        priorityPreview.innerText = e.target.value;
+    });
+
+</script>
+</body>
+</html>

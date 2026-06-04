@@ -1,0 +1,136 @@
+{
+  "id": "report",
+  "name": "報告書",
+  "description": "業務報告・調査レポート向けテンプレート",
+  "defaultPageCount": 2,
+  "pages": [
+    {
+      "pageNumber": 1,
+      "label": "表紙・本文",
+      "elements": [
+        {
+          "id": "r_title",
+          "type": "text",
+          "x": 20, "y": 20, "width": 170, "height": 14,
+          "content": "報告書タイトル",
+          "fontFamily": "sans", "fontSize": 18, "fontWeight": "bold",
+          "color": "#1a3a5c", "backgroundColor": "transparent",
+          "textAlign": "left", "lineHeight": 1.4,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_date",
+          "type": "text",
+          "x": 20, "y": 36, "width": 170, "height": 8,
+          "content": "作成日：2026年04月03日　作成者：氏名",
+          "fontFamily": "sans", "fontSize": 9, "fontWeight": "normal",
+          "color": "#6b7a8d", "backgroundColor": "transparent",
+          "textAlign": "left", "lineHeight": 1.5,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_divider",
+          "type": "text",
+          "x": 20, "y": 46, "width": 170, "height": 2,
+          "content": "",
+          "fontFamily": "sans", "fontSize": 1, "fontWeight": "normal",
+          "color": "#1a3a5c", "backgroundColor": "#1a3a5c",
+          "textAlign": "left", "lineHeight": 1,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_h1",
+          "type": "text",
+          "x": 20, "y": 52, "width": 170, "height": 10,
+          "content": "1. 概要",
+          "fontFamily": "sans", "fontSize": 12, "fontWeight": "bold",
+          "color": "#1a3a5c", "backgroundColor": "transparent",
+          "textAlign": "left", "lineHeight": 1.5,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_body1",
+          "type": "text",
+          "x": 20, "y": 64, "width": 170, "height": 30,
+          "content": "ここに報告内容の概要を記入してください。背景・目的・スコープなどを簡潔にまとめます。",
+          "fontFamily": "serif", "fontSize": 10, "fontWeight": "normal",
+          "color": "#1e1e1e", "backgroundColor": "transparent",
+          "textAlign": "justify", "lineHeight": 1.7,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_h2",
+          "type": "text",
+          "x": 20, "y": 98, "width": 170, "height": 10,
+          "content": "2. 詳細",
+          "fontFamily": "sans", "fontSize": 12, "fontWeight": "bold",
+          "color": "#1a3a5c", "backgroundColor": "transparent",
+          "textAlign": "left", "lineHeight": 1.5,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_body2",
+          "type": "text",
+          "x": 20, "y": 110, "width": 170, "height": 40,
+          "content": "詳細な内容をここに記入してください。データや分析結果などを具体的に説明します。",
+          "fontFamily": "serif", "fontSize": 10, "fontWeight": "normal",
+          "color": "#1e1e1e", "backgroundColor": "transparent",
+          "textAlign": "justify", "lineHeight": 1.7,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_table1",
+          "type": "table",
+          "x": 20, "y": 155, "width": 170, "height": 36,
+          "rows": 4, "cols": 3,
+          "headerRow": true,
+          "borderColor": "#aaaaaa", "borderWidth": 0.5,
+          "headerBg": "#1a3a5c",
+          "cells": [
+            [
+              {"content":"項目","fontFamily":"sans","fontSize":9,"fontWeight":"bold","color":"#ffffff","backgroundColor":"transparent","textAlign":"center","colSpan":1,"rowSpan":1},
+              {"content":"結果","fontFamily":"sans","fontSize":9,"fontWeight":"bold","color":"#ffffff","backgroundColor":"transparent","textAlign":"center","colSpan":1,"rowSpan":1},
+              {"content":"備考","fontFamily":"sans","fontSize":9,"fontWeight":"bold","color":"#ffffff","backgroundColor":"transparent","textAlign":"center","colSpan":1,"rowSpan":1}
+            ],
+            [
+              {"content":"項目A","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1},
+              {"content":"結果A","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1},
+              {"content":"","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1}
+            ],
+            [
+              {"content":"項目B","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1},
+              {"content":"結果B","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1},
+              {"content":"","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1}
+            ],
+            [
+              {"content":"項目C","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1},
+              {"content":"結果C","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1},
+              {"content":"","fontFamily":"serif","fontSize":9,"fontWeight":"normal","color":"#1e1e1e","backgroundColor":"transparent","textAlign":"left","colSpan":1,"rowSpan":1}
+            ]
+          ],
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_h3",
+          "type": "text",
+          "x": 20, "y": 196, "width": 170, "height": 10,
+          "content": "3. まとめ・今後の対応",
+          "fontFamily": "sans", "fontSize": 12, "fontWeight": "bold",
+          "color": "#1a3a5c", "backgroundColor": "transparent",
+          "textAlign": "left", "lineHeight": 1.5,
+          "locked": false, "zIndex": 1
+        },
+        {
+          "id": "r_body3",
+          "type": "text",
+          "x": 20, "y": 208, "width": 170, "height": 30,
+          "content": "まとめと今後の対応方針を記入してください。",
+          "fontFamily": "serif", "fontSize": 10, "fontWeight": "normal",
+          "color": "#1e1e1e", "backgroundColor": "transparent",
+          "textAlign": "justify", "lineHeight": 1.7,
+          "locked": false, "zIndex": 1
+        }
+      ]
+    }
+  ]
+}

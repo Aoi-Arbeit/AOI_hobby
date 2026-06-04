@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    height: 56px;
+    width: 100%;
+    box-shadow: 0 0 10px #444444;
+    background-color: white;
+    position: fixed;
+    top: 0;
+}
+.header-left {
+    float: left;
+    margin-top: 16px;
+    padding-left: 5px;
+}
+.header-right {
+    float: right;
+    padding-right: 5px;
+}
+.header-right a {
+    line-height: 56px;
+    color: #5a5c5f;
+    margin-left: 5px;
+}
+.clear {
+    clear: both;
+}

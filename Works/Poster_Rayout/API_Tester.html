@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ポスター生成デバッグ版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-slate-50 p-8">
+
+<!-- 
+Application Structure Plan:
+400エラーの原因を特定するための「通信ログ」表示機能を追加しました。
+1. .env読み込み処理の強化: スペースやクォーテーションを確実に除去するパース処理を実装。
+2. APIリクエスト前の検証: キーが空でないか、URLが正しいかを確認。
+3. 詳細なエラーログ: サーバーから返ってきた生のエラーメッセージを表示して原因を切り分けます。
+-->
+
+<div class="max-w-2xl mx-auto space-y-6">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h1 class="text-xl font-bold mb-4">ポスター生成デバッガー</h1>
+        
+        <div id="setup-status" class="text-xs mb-4 p-3 bg-slate-100 rounded-lg font-mono">
+            Checking .env file...
+        </div>
+
+        <button onclick="generatePoster()" id="gen-btn" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-500 disabled:bg-slate-300 transition-all">
+            生成を開始
+        </button>
+
+        <div id="loading" class="hidden mt-4 flex items-center justify-center gap-2">
+            <div class="loader"></div>
+            <span class="text-sm text-indigo-600 font-bold">通信中...</span>
+        </div>
+    </div>
+
+    <!-- ログ表示エリア（ここを見れば原因がわかります） -->
+    <div class="bg-slate-900 rounded-2xl p-6 text-xs font-mono text-emerald-400 overflow-x-auto">
+        <p class="text-slate-500 mb-2">// Communication Log</p>
+        <div id="debug-log" class="space-y-1"></div>
+    </div>
+</div>
+
+<script>
+let apiKey = "AIzaSyAZVZSgdljp8Cy59AG2sXygSVn5qatwUco";
+
+// 1. ページ読み込み時に .env を取得
+async function loadEnv() {
+    const status = document.getElementById('setup-status');
+    log("Attempting to load .env...");
+    try {
+        const response = await fetch('./.env');
+        if (!response.ok) throw new Error(".env file not found");
+        
+        const text = await response.text();
+        const lines = text.split('\n');
+        for (let line of lines) {
+            const [key, ...val] = line.trim().split('=');
+            if (key === 'GEMINI_API_KEY') {
+                // 前後の空白や引用符 (", ') を徹底的に除去
+                apiKey = val.join('=').trim().replace(/^["']|["']$/g, '');
+                break;
+            }
+        }
+
+        if (apiKey) {
+            status.textContent = "✅ .env loaded (Key starts with: " + apiKey.substring(0, 4) + ")";
+            log("API Key loaded successfully.");
+        } else {
+            status.textContent = "❌ GEMINI_API_KEY not found in .env";
+            log("Error: Key not found in .env", "error");
+        }
+    } catch (e) {
+        status.textContent = "❌ Failed to load .env";
+        log(e.message, "error");
+    }
+}
+
+// 2. 汎用APIコール関数（指数バックオフ付き）
+async function apiCall(url, payload, retries = 5) {
+    let delay = 1000;
+    for (let i = 0; i < retries; i++) {
+        try {
+            log(`Requesting AI (Attempt ${i+1})...`);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                // 400エラーなどの場合、Googleから返ってくるエラー詳細を表示
+                const errorDetail = result.error ? result.error.message : "Unknown Error";
+                throw new Error(`HTTP ${response.status}: ${errorDetail}`);
+            }
+
+            return result;
+        } catch (error) {
+            log(error.message, "error");
+            if (i === retries - 1) throw error;
+            await new Promise(r => setTimeout(r, delay));
+            delay *= 2;
+        }
+    }
+}
+
+// 3. メイン処理
+async function generatePoster() {
+    if (!apiKey) {
+        log("Cannot proceed: API Key is missing.", "error");
+        return;
+    }
+
+    const btn = document.getElementById('gen-btn');
+    const loader = document.getElementById('loading');
+    btn.disabled = true;
+    loader.classList.remove('hidden');
+
+    try {
+        // テキスト生成の例
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        
+        // Payloadの構造がGemini 2.5 Flashの仕様に合っているか確認
+        const payload = {
+            contents: [{
+                parts: [{ text: "プロフェッショナルなポスターのキャッチコピーを1つ考えてください。" }]
+            }]
+        };
+
+        log("Sending payload to Gemini...");
+        const data = await apiCall(url, payload);
+        
+        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        log("AI Response received!", "success");
+        log("Result: " + aiResponse, "success");
+
+    } catch (e) {
+        log("Process failed: " + e.message, "error");
+    } finally {
+        btn.disabled = false;
+        loader.classList.add('hidden');
+    }
+}
+
+function log(msg, type = "info") {
+    const div = document.getElementById('debug-log');
+    const colors = { info: 'text-emerald-400', error: 'text-rose-400', success: 'text-blue-400' };
+    const entry = document.createElement('div');
+    entry.className = colors[type];
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    div.appendChild(entry);
+    console.log(msg);
+}
+
+window.onload = loadEnv;
+</script>
+</body>
+</html>

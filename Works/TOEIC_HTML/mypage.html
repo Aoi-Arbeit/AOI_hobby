@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TOEIC対策 - マイページ</title>
+
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="mypage.css">
+</head>
+
+<body>
+    <main id="main-content">
+        <h1>マイページ</h1>
+
+        <div class="profile-section">
+            <img id="user-icon" src="default-icon.png" alt="ユーザーアイコン"
+                style="width: 80px; height: 80px; border-radius: 50%;">
+
+            <div id="name-container">
+                <span id="username">ゲスト</span>
+                <button id="edit-name-btn">編集</button>
+            </div>
+
+            <div id="edit-name-form" style="display: none;">
+                <input type="text" id="new-username" placeholder="新しい名前を入力">
+                <button id="save-name-btn">保存</button>
+                <button id="cancel-name-btn">キャンセル</button>
+            </div>
+        </div>
+
+        <section id="user-progress">
+            <h2>学習進捗</h2>
+            <div class="progress-cards">
+                <div class="card">
+                    <span class="card-value" id="streakCount">0</span>
+                    <span class="card-label">連続日数</span>
+                </div>
+                <div class="card">
+                    <span class="card-value" id="totalQuestions">0</span>
+                    <span class="card-label">総問題数</span>
+                </div>
+            </div>
+        </section>
+
+        <a href="index.html" class="home-link">ホームに戻る</a>
+    </main>
+    <script type="module" src="mypage.js"></script>
+</body>
+
+</html>

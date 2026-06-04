@@ -1,0 +1,20 @@
+h1 {
+    font-size: 40px;
+    font-family: 'Times New Roman', Times, serif;
+}
+body {
+    color: #669999;
+}
+div {
+    text-align: center;
+}
+#penguin {
+    color: #99cccc;
+    font-weight: bolder;
+}
+p { 
+    line-height: 140%;
+}
+.penguin-list {
+    list-style-type: circle;
+}

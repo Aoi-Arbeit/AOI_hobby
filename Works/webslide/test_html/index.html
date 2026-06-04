@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Separated Web Slide</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <section class="slide active">
+            <svg class="icon-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#00d2ff" stroke-width="8" />
+                <path d="M30 50 L45 65 L70 35" fill="none" stroke="#00d2ff" stroke-width="8" />
+            </svg>
+            <h1>HTML & CSS 分離完了</h1>
+            <p>矢印キー（→）で次へ</p>
+        </section>
+
+        <section class="slide">
+            <h1>SVGのメリット</h1>
+            <p>クリックして色を変えてみよう！</p>
+            
+            <svg id="interactive-svg" width="200" height="200" viewBox="0 0 100 100" style="margin-top: 20px; cursor: pointer;">
+                <circle cx="30" cy="50" r="20" fill="#ff6b6b" class="svg-shape" />
+                <rect x="55" y="30" width="30" height="40" fill="#4ecdc4" class="svg-shape" />
+            </svg>
+
+            <ul>
+                <li>拡大してもボケない</li>
+                <li>CSSで色を変えられる</li>
+                <li>コードだから軽い！</li>
+            </ul>
+        </section>
+        <div id="page-number"></div>
+    </body>
+    <script src="script.js" defer></script>
+</html>

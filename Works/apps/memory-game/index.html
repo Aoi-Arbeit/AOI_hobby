@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>神経衰弱ゲーム</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>神経衰弱</h1>
+      <p class="subtitle">同じ絵柄のペアを揃えよう</p>
+    </header>
+
+    <section class="control-panel">
+      <div class="difficulty">
+        <label for="difficulty">難易度:</label>
+        <select id="difficulty">
+          <option value="easy">かんたん (4×3)</option>
+          <option value="normal" selected>ふつう (4×4)</option>
+          <option value="hard">むずかしい (6×4)</option>
+          <option value="expert">エキスパート (6×6)</option>
+        </select>
+        <button id="startBtn" class="btn btn-primary">スタート</button>
+      </div>
+
+      <div class="status">
+        <div class="status-item">
+          <span class="status-label">⏱ 時間</span>
+          <span id="timer" class="status-value">00:00</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">🃏 めくった</span>
+          <span id="moves" class="status-value">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">⭐ スコア</span>
+          <span id="score" class="status-value">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">🏆 ベスト</span>
+          <span id="bestScore" class="status-value">-</span>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <div id="board" class="board" data-cols="4">
+        <div class="placeholder">「スタート」ボタンを押してゲームを始めてください</div>
+      </div>
+    </main>
+
+    <div id="resultModal" class="modal hidden">
+      <div class="modal-content">
+        <h2>🎉 クリア!</h2>
+        <p>おめでとうございます!</p>
+        <dl class="result-list">
+          <dt>クリアタイム</dt><dd id="resultTime">-</dd>
+          <dt>めくった回数</dt><dd id="resultMoves">-</dd>
+          <dt>スコア</dt><dd id="resultScore">-</dd>
+          <dt id="newRecordRow" class="hidden">新記録!</dt><dd id="newRecordValue" class="hidden"></dd>
+        </dl>
+        <div class="modal-actions">
+          <button id="retryBtn" class="btn btn-primary">もう一度</button>
+          <button id="closeBtn" class="btn">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <small>©2026 Memory Game</small>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

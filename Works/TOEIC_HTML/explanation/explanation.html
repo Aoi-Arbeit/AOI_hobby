@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>TOEIC AI 解説ツール</title>
+    <link rel="stylesheet" href="explanation.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <section id="input-section">
+            <h1>TOEIC問題 入力</h1>
+            <div class="field">
+                <label>問題文</label>
+                <textarea id="question" placeholder="Enter TOEIC question here..."></textarea>
+            </div>
+            <div class="field">
+                <label>Python メモ (任意)</label>
+                <textarea id="code" class="code-font" placeholder="# 例: s = 'subject'"></textarea>
+            </div>
+            <button id="run-btn">解説を生成する</button>
+        </section>
+
+        <section id="result-section" class="hidden">
+            <h1>AI講師の解説</h1>
+            <div id="explanation-display" class="markdown-body"></div>
+            <button onclick="location.reload()">次の問題へ</button>
+        </section>
+        
+        <div id="loading" class="hidden">AI思考中...</div>
+    </div>
+
+    <script src="explanation.js"></script>
+</body>
+</html>

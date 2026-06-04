@@ -1,0 +1,70 @@
+/* ===========================
+   リセット & ベーススタイル
+   =========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #1a1a2e;
+  color: #eaeaea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ===========================
+   レイアウト
+   =========================== */
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2rem;
+  color: #e94560;
+}
+
+#score-display {
+  font-size: 1.2rem;
+  margin-top: 8px;
+}
+
+/* ===========================
+   キャンバス
+   =========================== */
+#game-canvas {
+  border: 2px solid #e94560;
+  background-color: #16213e;
+  display: block;
+  max-width: 100%;
+}
+
+/* ===========================
+   ボタン
+   =========================== */
+button {
+  padding: 12px 32px;
+  font-size: 1rem;
+  background-color: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #c73652;
+}

@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>書類作成Webページ プレビュー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --color-primary: #1a3a5c;
+    --color-accent:  #2e7dcc;
+    --color-bg:      #e8edf3;
+    --color-surface: #ffffff;
+    --color-border:  #c0cfe0;
+    --color-text:    #1e1e1e;
+    --color-muted:   #6b7a8d;
+    --color-light:   #f0f4f8;
+    --color-green:   #2a7a4b;
+    --color-tag-required: #1a5fa8;
+    --color-tag-important: #0e6e40;
+    --color-tag-normal:    #7a5800;
+
+    /* A4 @ 96dpi: 794px × 1123px */
+    --a4-w: 794px;
+    --a4-h: 1123px;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--color-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── App Shell ── */
+  .app-shell {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    background: var(--color-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+    height: 48px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .toolbar-logo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #aad4ff;
+    white-space: nowrap;
+  }
+  .toolbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+  .toolbar-doc-name {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+  .toolbar-btn.primary { background: var(--color-accent); color: #fff; }
+  .toolbar-btn.primary:hover { background: #2570bb; }
+  .toolbar-btn.ghost { background: rgba(255,255,255,0.12); color: #fff; }
+  .toolbar-btn.ghost:hover { background: rgba(255,255,255,0.22); }
+  .toolbar-btn svg { width: 13px; height: 13px; }
+
+  /* ── Main Layout ── */
+  .main-layout {
+    display: flex;
+    width: 100%;
+    min-height: calc(100vh - 48px);
+  }
+
+  /* ── Left Panel (page navigator) ── */
+  .side-panel {
+    width: 180px;
+    flex-shrink: 0;
+    background: #1e2d3e;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+  }
+  .side-panel-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0 4px;
+    margin-bottom: 4px;
+  }
+  .page-thumb {
+    background: var(--color-surface);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+    aspect-ratio: 210 / 297;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .page-thumb.active { border-color: var(--color-accent); }
+  .page-thumb:hover:not(.active) { border-color: rgba(46,125,204,0.5); }
+  .page-thumb-num {
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 8px;
+    color: var(--color-muted);
+    font-weight: 600;
+  }
+  .thumb-mini {
+    width: 100%;
+    padding: 8px 6px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .thumb-line { height: 3px; background: var(--color-primary); border-radius: 1px; }
+  .thumb-line.accent { background: var(--color-accent); width: 60%; }
+  .thumb-line.thin { height: 2px; background: #dde4ed; }
+  .thumb-line.thin.w50 { width: 50%; }
+  .thumb-line.thin.w70 { width: 70%; }
+  .thumb-line.thin.w40 { width: 40%; }
+
+  /* ── Canvas Area ── */
+  .canvas-area {
+    flex: 1;
+    overflow: auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  /* ── A4 Page ── */
+  .a4-page {
+    width: var(--a4-w);
+    min-height: var(--a4-h);
+    background: var(--color-surface);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .a4-page-inner {
+    padding: 20mm 20mm 18mm;
+    min-height: var(--a4-h);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Cover Page ── */
+  .cover-band {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #2e7dcc 100%);
+    border-radius: 6px;
+    padding: 32px 28px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .cover-band::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: rgba(255,255,255,0.35);
+  }
+  .cover-tag {
+    font-size: 9pt;
+    font-weight: 700;
+    color: rgba(170,212,255,0.9);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cover-title {
+    font-size: 22pt;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .cover-sub {
+    font-size: 14pt;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 20px;
+  }
+  .cover-meta {
+    font-size: 8.5pt;
+    color: rgba(200,228,255,0.9);
+  }
+  .cover-deco {
+    position: absolute;
+    right: 24px; top: 16px;
+    font-size: 64pt;
+    opacity: 0.06;
+    font-weight: 900;
+    color: #fff;
+    user-select: none;
+  }
+
+  /* ── Info Table ── */
+  .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 8.5pt; }
+  .info-table td { padding: 5px 8px; border: 0.5pt solid var(--color-border); vertical-align: middle; }
+  .info-table td:first-child {
+    background: var(--color-primary);
+    color: #fff;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 600;
+    width: 38mm;
+    white-space: nowrap;
+  }
+  .info-table tr:nth-child(even) td:last-child { background: var(--color-light); }
+
+  /* ── Section Header ── */
+  .section-header {
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 12px 6px 38px;
+    font-size: 10.5pt;
+    font-weight: 700;
+    margin: 20px 0 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .section-num {
+    position: absolute;
+    left: 8px;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 8pt;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── H2 ── */
+  .h2 {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 12px 0 5px;
+    padding-left: 8px;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  /* ── Body Text ── */
+  .body-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 8.5pt;
+    line-height: 1.75;
+    color: var(--color-text);
+    margin-bottom: 6px;
+    text-align: justify;
+  }
+  .body-text b { font-family: 'Noto Sans JP', sans-serif; }
+
+  /* ── Bullet List ── */
+  .bullet-list { margin: 0 0 6px 12px; }
+  .bullet-list li {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 8.5pt;
+    line-height: 1.7;
+    color: var(--color-text);
+    margin-bottom: 2px;
+    list-style: none;
+    position: relative;
+    padding-left: 12px;
+  }
+  .bullet-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  /* ── Data Table ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 10px; }
+  .data-table th {
+    background: var(--color-primary);
+    color: #fff;
+    padding: 5px 6px;
+    text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 600;
+    border: 0.5pt solid var(--color-border);
+  }
+  .data-table td {
+    padding: 4px 6px;
+    border: 0.5pt solid var(--color-border);
+    vertical-align: top;
+    font-family: 'Noto Serif JP', serif;
+    line-height: 1.5;
+  }
+  .data-table tr:nth-child(even) td { background: var(--color-light); }
+
+  /* ── Priority Tags ── */
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 7.5pt;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .tag.required { background: #dbeafe; color: var(--color-tag-required); }
+  .tag.important { background: #d1fae5; color: var(--color-tag-important); }
+  .tag.normal { background: #fef9c3; color: var(--color-tag-normal); }
+
+  /* ── Code Block ── */
+  .code-block {
+    background: #f5f8fc;
+    border: 0.5pt solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    font-size: 7.5pt;
+  }
+  .code-block-header {
+    background: var(--color-primary);
+    color: rgba(170,212,255,0.9);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 8pt;
+    font-weight: 600;
+    padding: 4px 10px;
+  }
+  .code-block-body {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5pt;
+    color: #1a3a5c;
+    padding: 8px 12px;
+    line-height: 1.65;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .code-c { color: #2a7a4b; }  /* comment */
+  .code-k { color: #7c3aed; }  /* keyword */
+  .code-s { color: #b45309; }  /* string */
+  .code-n { color: #0e6e8c; }  /* number */
+
+  /* ── Page Footer ── */
+  .page-footer {
+    margin-top: auto;
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 0.5pt solid var(--color-border);
+    font-size: 7.5pt;
+    color: var(--color-muted);
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  /* ── Right Panel ── */
+  .props-panel {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+  .props-section-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1.5px solid var(--color-border);
+  }
+  .props-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .props-label { font-size: 8pt; color: var(--color-muted); }
+  .props-val {
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--color-text);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .props-input {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 4px 7px;
+    font-size: 8pt;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--color-text);
+    background: var(--color-light);
+    margin-bottom: 6px;
+    outline: none;
+  }
+  .props-input:focus { border-color: var(--color-accent); }
+  .props-color-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .color-swatch {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    border: 1.5px solid var(--color-border);
+    cursor: pointer;
+  }
+  .color-swatch.active { border-color: var(--color-accent); box-shadow: 0 0 0 2px rgba(46,125,204,0.3); }
+  .export-btn {
+    width: 100%;
+    padding: 8px;
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 9pt;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .export-btn:hover { background: #2570bb; }
+  .export-btn svg { width: 14px; height: 14px; }
+
+  /* ── Scale Info Badge ── */
+  .scale-badge {
+    position: fixed;
+    bottom: 16px;
+    left: 200px;
+    background: rgba(26,58,92,0.85);
+    color: #aad4ff;
+    font-size: 9pt;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 20px;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  /* ── Responsive Scale ── */
+  @media (max-width: 1100px) {
+    .side-panel { width: 140px; }
+    .props-panel { display: none; }
+  }
+  @media (max-width: 860px) {
+    .side-panel { display: none; }
+    .canvas-area { padding: 16px; }
+    .a4-page { width: 100%; }
+    :root { --a4-w: 100%; --a4-h: auto; }
+  }
+
+  /* ── Highlight selected element (demo) ── */
+  .elem-highlight {
+    outline: 1.5px dashed var(--color-accent);
+    outline-offset: 2px;
+    cursor: pointer;
+  }
+  .elem-highlight:hover { outline-style: solid; }
+
+  hr.doc-hr { border: none; border-top: 0.5pt solid var(--color-border); margin: 14px 0; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ── Toolbar ── -->
+  <div class="toolbar">
+    <span class="toolbar-logo">📄 DocEditor</span>
+    <div class="toolbar-sep"></div>
+    <span class="toolbar-doc-name">書類作成Webページ_要件定義書</span>
+
+    <button class="toolbar-btn ghost">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      テンプレート
+    </button>
+    <button class="toolbar-btn ghost">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+      画像追加
+    </button>
+    <button class="toolbar-btn ghost">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      表追加
+    </button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn primary" onclick="alert('PDF出力デモ: jsPDF で A4 (210mm×297mm) に書き出します')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
+      PDF出力
+    </button>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- ── Left: Page Navigator ── -->
+    <div class="side-panel">
+      <div class="side-panel-label">ページ一覧</div>
+
+      <div class="page-thumb active" onclick="showPage(1)">
+        <div class="thumb-mini">
+          <div class="thumb-line accent" style="height:4px; margin-bottom:3px;"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w70"></div>
+          <div class="thumb-line thin w50"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w70"></div>
+          <div class="thumb-line thin w40"></div>
+          <div class="thumb-line thin"></div>
+        </div>
+        <span class="page-thumb-num">1</span>
+      </div>
+
+      <div class="page-thumb" onclick="showPage(2)">
+        <div class="thumb-mini">
+          <div class="thumb-line" style="height:3px; margin-bottom:3px;"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w70"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w50"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w70"></div>
+          <div class="thumb-line thin w40"></div>
+        </div>
+        <span class="page-thumb-num">2</span>
+      </div>
+
+      <div class="page-thumb" onclick="showPage(3)">
+        <div class="thumb-mini">
+          <div class="thumb-line" style="height:3px; margin-bottom:3px;"></div>
+          <div class="thumb-line thin w70"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w50"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w40"></div>
+          <div class="thumb-line thin"></div>
+          <div class="thumb-line thin w70"></div>
+        </div>
+        <span class="page-thumb-num">3</span>
+      </div>
+    </div>
+
+    <!-- ── Center: Canvas ── -->
+    <div class="canvas-area" id="canvasArea">
+
+      <!-- ===== Page 1: 概要 + 機能要件 ===== -->
+      <div class="a4-page" id="page1">
+        <div class="a4-page-inner">
+
+          <!-- Cover -->
+          <div class="cover-band">
+            <div class="cover-deco">PDF</div>
+            <div class="cover-tag">要件定義書 — Ver 1.0</div>
+            <div class="cover-title">書類作成Webページ</div>
+            <div class="cover-sub">報告書・企画書 作成アプリケーション</div>
+            <div class="cover-meta">
+              作成日: 2026年04月02日 &nbsp;|&nbsp; 技術: Vanilla JS &nbsp;|&nbsp; 出力: PDF (A4, 絶対座標)
+            </div>
+          </div>
+
+          <!-- Doc info -->
+          <table class="info-table">
+            <tr><td>ドキュメント名</td><td>書類作成Webページ 要件定義書</td></tr>
+            <tr><td>対象システム</td><td>報告書・企画書 作成Webアプリケーション</td></tr>
+            <tr><td>技術スタック</td><td>HTML5 / CSS3 / Vanilla JavaScript (ES Modules)</td></tr>
+            <tr><td>PDF出力ライブラリ</td><td>jsPDF v2 + jsPDF-AutoTable / Noto CJK フォント埋め込み</td></tr>
+            <tr><td>ステータス</td><td>ドラフト</td></tr>
+          </table>
+
+          <!-- Section 1 -->
+          <div class="section-header"><span class="section-num">1</span>プロジェクト概要</div>
+
+          <div class="h2">1.1 目的</div>
+          <p class="body-text">
+            ブラウザ上で報告書・企画書などのビジネス文書を作成し、デバイスや環境に依存しない一貫したレイアウトで
+            PDF（A4サイズ）として出力できるWebアプリケーションを構築する。
+          </p>
+
+          <div class="h2">1.2 背景・課題</div>
+          <ul class="bullet-list">
+            <li>既存のWord / Google ドキュメントではブラウザ印刷時にフォント・余白がデバイスによってずれる。</li>
+            <li>ピクセル単位の絶対座標管理により、どのデバイスでも同一の印刷結果を保証したい。</li>
+            <li>外部サーバー不要で動作する軽量な Vanilla JS ベースの実装が求められる。</li>
+          </ul>
+
+          <!-- Section 2 -->
+          <div class="section-header"><span class="section-num">2</span>機能要件</div>
+
+          <div class="h2">2.1 書類作成機能</div>
+          <table class="data-table">
+            <thead>
+              <tr><th style="width:14mm">ID</th><th style="width:28mm">機能名</th><th>説明</th><th style="width:16mm">優先度</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>F-01</td><td>テンプレート選択</td><td>報告書・企画書テンプレートを選択して編集開始</td><td><span class="tag required">必須</span></td></tr>
+              <tr><td>F-02</td><td>テキスト入力</td><td>タイトル・本文・箇条書きなどの入力フィールド</td><td><span class="tag required">必須</span></td></tr>
+              <tr><td>F-03</td><td>画像挿入</td><td>ローカル画像をドラッグ＆ドロップまたはファイル選択で挿入</td><td><span class="tag important">重要</span></td></tr>
+              <tr><td>F-04</td><td>表作成</td><td>行・列を指定してセル入力できるテーブルコンポーネント</td><td><span class="tag important">重要</span></td></tr>
+              <tr><td>F-05</td><td>ページ管理</td><td>ページの追加・削除・並べ替え（最大20ページ）</td><td><span class="tag important">重要</span></td></tr>
+              <tr><td>F-06</td><td>リアルタイムプレビュー</td><td>A4サイズのプレビューをブラウザ上でリアルタイム表示</td><td><span class="tag required">必須</span></td></tr>
+              <tr><td>F-07</td><td>フォント選択</td><td>ゴシック体・明朝体などフォントファミリーを指定可能</td><td><span class="tag normal">通常</span></td></tr>
+              <tr><td>F-08</td><td>カラー設定</td><td>テキスト色・背景色のカラーピッカー対応</td><td><span class="tag normal">通常</span></td></tr>
+            </tbody>
+          </table>
+
+          <div class="h2">2.2 PDF 出力機能</div>
+          <table class="data-table">
+            <thead>
+              <tr><th style="width:14mm">ID</th><th style="width:30mm">要件</th><th>詳細</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>P-01</td><td>ページサイズ</td><td>A4（210mm × 297mm）固定。B5・Letter は将来対応</td></tr>
+              <tr><td>P-02</td><td>解像度</td><td>96dpi 基準のピクセル座標を mm 換算して PDF に埋め込み</td></tr>
+              <tr><td>P-03</td><td>フォント埋め込み</td><td>Noto Sans JP / Noto Serif JP を Base64 埋め込みで文字化けを防止</td></tr>
+              <tr><td>P-04</td><td>ファイル名</td><td>「テンプレート種別_YYYYMMDD_HHmm.pdf」形式で自動命名</td></tr>
+              <tr><td>P-05</td><td>メタデータ</td><td>タイトル・作成者・作成日を PDF メタデータに書き込み</td></tr>
+            </tbody>
+          </table>
+
+          <div class="page-footer">
+            <span>書類作成Webページ 要件定義書 — 社外秘</span>
+            <span>p. 1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Page 2: 絶対座標 + 非機能 ===== -->
+      <div class="a4-page" id="page2">
+        <div class="a4-page-inner">
+
+          <div class="section-header"><span class="section-num">3</span>絶対座標管理とレイアウト設計</div>
+
+          <div class="h2">3.1 座標系の定義</div>
+          <p class="body-text">
+            すべての要素はA4用紙を基準とした<b>論理座標（単位: mm）</b>で定義する。
+            ブラウザのdpr（デバイスピクセル比）やウィンドウ幅に左右されないよう、
+            レンダリング時に「mm → px」変換を一元管理するユーティリティ関数を設ける。
+          </p>
+          <div class="code-block">
+            <div class="code-block-header">js/utils/coords.js</div>
+            <div class="code-block-body"><span class="code-k">const</span> DPI = <span class="code-n">96</span>;
+<span class="code-k">const</span> MM_PER_INCH = <span class="code-n">25.4</span>;
+<span class="code-k">export const</span> mmToPx = (mm) =&gt; mm / MM_PER_INCH * DPI;
+
+<span class="code-c">// A4 = 210mm × 297mm → 794px × 1123px (96dpi)</span>
+<span class="code-k">export const</span> A4_W_PX = mmToPx(<span class="code-n">210</span>);  <span class="code-c">// ≈ 794px</span>
+<span class="code-k">export const</span> A4_H_PX = mmToPx(<span class="code-n">297</span>);  <span class="code-c">// ≈ 1123px</span></div>
+          </div>
+
+          <div class="h2">3.2 要素の座標データ構造</div>
+          <table class="data-table">
+            <thead>
+              <tr><th style="width:24mm">プロパティ</th><th style="width:16mm">型</th><th style="width:14mm">単位</th><th>説明</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>x</code></td><td>number</td><td>mm</td><td>用紙左端からの水平距離</td></tr>
+              <tr><td><code>y</code></td><td>number</td><td>mm</td><td>用紙上端からの垂直距離</td></tr>
+              <tr><td><code>width</code></td><td>number</td><td>mm</td><td>要素の幅</td></tr>
+              <tr><td><code>height</code></td><td>number</td><td>mm</td><td>要素の高さ（テキストは自動計算）</td></tr>
+              <tr><td><code>fontSize</code></td><td>number</td><td>pt</td><td>フォントサイズ（ポイント単位）</td></tr>
+              <tr><td><code>type</code></td><td>string</td><td>—</td><td><code>'text'</code> | <code>'image'</code> | <code>'table'</code> | <code>'line'</code></td></tr>
+            </tbody>
+          </table>
+
+          <div class="h2">3.3 デバイス間差異の排除方針</div>
+          <ul class="bullet-list">
+            <li>プレビュー用コンテナは常に <code>794px × 1123px</code> の固定サイズで描画し、<code>CSS transform: scale()</code> でビューポートに収める。</li>
+            <li>フォントはWebフォント（Noto CJK）で統一し、システムフォントに依存しない。</li>
+            <li>行高・文字間隔はmmまたはpt単位で指定し、相対単位（em / rem）を使用しない。</li>
+            <li>PDF生成ライブラリには座標をmm単位で直接渡し、ブラウザのレンダリングを経由しない経路も確保する。</li>
+          </ul>
+
+          <div class="code-block">
+            <div class="code-block-header">css/a4-canvas.css — A4固定キャンバス</div>
+            <div class="code-block-body"><span class="code-c">/* A4 キャンバス固定サイズ */</span>
+.a4-canvas {
+  position: relative;
+  width: <span class="code-n">794</span>px;   <span class="code-c">/* mmToPx(210) */</span>
+  height: <span class="code-n">1123</span>px; <span class="code-c">/* mmToPx(297) */</span>
+  background: #fff;
+  overflow: hidden;
+}
+<span class="code-c">/* ビューポートに合わせてスケール */</span>
+.a4-wrapper {
+  transform-origin: top center;
+  transform: scale(<span class="code-k">var</span>(--canvas-scale));
+}</div>
+          </div>
+
+          <div class="section-header"><span class="section-num">4</span>非機能要件</div>
+          <table class="data-table">
+            <thead>
+              <tr><th style="width:26mm">カテゴリ</th><th style="width:32mm">要件</th><th>目標値・条件</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>パフォーマンス</td><td>PDF 生成時間</td><td>5 ページ以内のドキュメントで 5 秒以内</td></tr>
+              <tr><td>パフォーマンス</td><td>プレビュー描画</td><td>操作から 100ms 以内に反映</td></tr>
+              <tr><td>互換性</td><td>対応ブラウザ</td><td>Chrome 110+, Firefox 110+, Edge 110+, Safari 16+</td></tr>
+              <tr><td>可用性</td><td>オフライン動作</td><td>一度読み込めばネットワーク不要（PWA 対応推奨）</td></tr>
+              <tr><td>セキュリティ</td><td>データ保存</td><td>入力データは localStorage のみ。外部送信なし</td></tr>
+              <tr><td>アクセシビリティ</td><td>WCAG</td><td>WCAG 2.1 AA レベル準拠</td></tr>
+              <tr><td>保守性</td><td>コード品質</td><td>JSDoc 必須、Jest カバレッジ 70% 以上</td></tr>
+            </tbody>
+          </table>
+
+          <div class="page-footer">
+            <span>書類作成Webページ 要件定義書 — 社外秘</span>
+            <span>p. 2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Page 3: 技術構成 + マイルストーン ===== -->
+      <div class="a4-page" id="page3">
+        <div class="a4-page-inner">
+
+          <div class="section-header"><span class="section-num">5</span>システム構成・技術選定</div>
+
+          <div class="h2">5.1 技術スタック</div>
+          <table class="data-table">
+            <thead>
+              <tr><th style="width:28mm">レイヤー</th><th style="width:42mm">ライブラリ / 仕様</th><th>選定理由</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>フロントエンド</td><td>Vanilla JS (ES2022+)</td><td>フレームワーク依存なし。長期保守性と軽量性を重視</td></tr>
+              <tr><td>モジュール管理</td><td>ES Modules</td><td>外部バンドラー不要でブラウザネイティブに動作</td></tr>
+              <tr><td>PDF 生成</td><td>jsPDF v2 + AutoTable</td><td>クライアントサイド PDF 生成。mm 単位指定対応</td></tr>
+              <tr><td>フォント</td><td>Noto Sans/Serif JP</td><td>日本語対応、ライセンスフリー、Base64 埋め込み可</td></tr>
+              <tr><td>画像処理</td><td>html2canvas（補助）</td><td>Canvas 要素の PDF 変換に使用</td></tr>
+              <tr><td>テスト</td><td>Jest + Testing Library</td><td>座標変換ロジックの単体テスト</td></tr>
+            </tbody>
+          </table>
+
+          <div class="h2">5.2 ディレクトリ構成（案）</div>
+          <div class="code-block">
+            <div class="code-block-header">プロジェクト構成</div>
+            <div class="code-block-body">project/
+├── index.html               <span class="code-c"># エントリーポイント</span>
+├── css/
+│   ├── base.css             <span class="code-c"># リセット・基本スタイル</span>
+│   ├── a4-canvas.css        <span class="code-c"># A4 キャンバス（794px × 1123px 固定）</span>
+│   └── toolbar.css          <span class="code-c"># ツールバー UI</span>
+├── js/
+│   ├── main.js              <span class="code-c"># アプリ初期化</span>
+│   ├── editor.js            <span class="code-c"># 要素の追加・移動・選択</span>
+│   ├── layout.js            <span class="code-c"># 絶対座標管理・mm↔px 変換</span>
+│   ├── pdfExport.js         <span class="code-c"># jsPDF ラッパー・PDF 出力</span>
+│   ├── templates/           <span class="code-c"># テンプレート定義 (JSON)</span>
+│   └── utils/coords.js      <span class="code-c"># mmToPx / pxToMm</span>
+└── fonts/                   <span class="code-c"># Noto CJK Base64</span></div>
+          </div>
+
+          <div class="section-header"><span class="section-num">6</span>UI / UX 要件</div>
+          <table class="data-table">
+            <thead><tr><th style="width:36mm">画面名</th><th>主な機能</th></tr></thead>
+            <tbody>
+              <tr><td>ホーム画面</td><td>テンプレート一覧（報告書・企画書）の選択。新規作成・既存ファイル読み込み</td></tr>
+              <tr><td>エディタ画面</td><td>A4プレビュー（中央）＋ ツールバー（上部）＋ プロパティパネル（右側）</td></tr>
+              <tr><td>PDF 出力ダイアログ</td><td>ファイル名入力・ページ範囲指定・出力。生成後に新規タブでプレビュー</td></tr>
+            </tbody>
+          </table>
+
+          <div class="section-header"><span class="section-num">7</span>開発マイルストーン</div>
+          <table class="data-table">
+            <thead><tr><th style="width:20mm">フェーズ</th><th>内容</th><th style="width:20mm">期間</th></tr></thead>
+            <tbody>
+              <tr><td>Phase 1</td><td>A4キャンバス＋絶対座標管理基盤の構築、テキスト要素の追加・編集</td><td>2 週間</td></tr>
+              <tr><td>Phase 2</td><td>画像・表コンポーネントの実装、ドラッグ＆ドロップ機能</td><td>2 週間</td></tr>
+              <tr><td>Phase 3</td><td>PDF出力機能（jsPDF）、フォント埋め込み、ファイル名自動生成</td><td>1 週間</td></tr>
+              <tr><td>Phase 4</td><td>報告書・企画書テンプレートの作成、プレビュー最終調整</td><td>1 週間</td></tr>
+              <tr><td>Phase 5</td><td>テスト・パフォーマンス最適化・ドキュメント整備・リリース</td><td>1 週間</td></tr>
+            </tbody>
+          </table>
+
+          <div class="section-header"><span class="section-num">8</span>リスクと対策</div>
+          <table class="data-table">
+            <thead><tr><th>リスク</th><th style="width:14mm">影響度</th><th style="width:58mm">対策</th></tr></thead>
+            <tbody>
+              <tr><td>日本語フォント埋め込みによる PDF ファイルサイズ肥大化</td><td style="text-align:center">中</td><td>サブセット化（使用文字のみ埋め込み）でサイズ削減</td></tr>
+              <tr><td>html2canvas のブラウザ間レンダリング差異</td><td style="text-align:center">中</td><td>テキストは直接 jsPDF で描画し html2canvas に依存しない</td></tr>
+              <tr><td>大量ページ数での PDF 生成パフォーマンス低下</td><td style="text-align:center">低</td><td>Web Worker で非同期生成・プログレスバー表示</td></tr>
+            </tbody>
+          </table>
+
+          <div class="page-footer">
+            <span>書類作成Webページ 要件定義書 — 社外秘</span>
+            <span>p. 3</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /canvas-area -->
+
+    <!-- ── Right: Properties Panel ── -->
+    <div class="props-panel">
+      <div>
+        <div class="props-section-title">ドキュメント情報</div>
+        <div class="props-row"><span class="props-label">ページ数</span><span class="props-val">3</span></div>
+        <div class="props-row"><span class="props-label">用紙サイズ</span><span class="props-val">A4</span></div>
+        <div class="props-row"><span class="props-label">幅</span><span class="props-val">210 mm</span></div>
+        <div class="props-row"><span class="props-label">高さ</span><span class="props-val">297 mm</span></div>
+        <div class="props-row"><span class="props-label">解像度</span><span class="props-val">96 dpi</span></div>
+        <div class="props-row"><span class="props-label">座標単位</span><span class="props-val">mm</span></div>
+      </div>
+
+      <div>
+        <div class="props-section-title">選択要素のプロパティ</div>
+        <div class="props-label" style="margin-bottom:4px">X 座標 (mm)</div>
+        <input class="props-input" type="number" value="20" min="0" max="210">
+        <div class="props-label" style="margin-bottom:4px">Y 座標 (mm)</div>
+        <input class="props-input" type="number" value="15" min="0" max="297">
+        <div class="props-label" style="margin-bottom:4px">幅 (mm)</div>
+        <input class="props-input" type="number" value="170" min="1" max="210">
+        <div class="props-label" style="margin-bottom:4px">フォントサイズ (pt)</div>
+        <input class="props-input" type="number" value="18" min="6" max="72">
+      </div>
+
+      <div>
+        <div class="props-section-title">テキストカラー</div>
+        <div class="props-color-row">
+          <div class="color-swatch active" style="background:#1a3a5c" title="#1a3a5c"></div>
+          <div class="color-swatch" style="background:#2e7dcc" title="#2e7dcc"></div>
+          <div class="color-swatch" style="background:#1e1e1e" title="#1e1e1e"></div>
+          <div class="color-swatch" style="background:#2a7a4b" title="#2a7a4b"></div>
+          <div class="color-swatch" style="background:#c06010" title="#c06010"></div>
+          <div class="color-swatch" style="background:#7c3aed" title="#7c3aed"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="props-section-title">PDF 出力</div>
+        <button class="export-btn" onclick="alert('PDF出力デモ\n\njsPDF で A4 (210mm×297mm) に出力します。\n絶対座標(mm)で全要素を配置するため\nどのデバイスでも同一のPDFが生成されます。')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/>
+          </svg>
+          PDF を出力する
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /main-layout -->
+</div><!-- /app-shell -->
+
+<div class="scale-badge" id="scaleBadge">A4: 794 × 1123 px (96dpi)</div>
+
+<script>
+  // Page thumb navigation
+  function showPage(n) {
+    document.querySelectorAll('.page-thumb').forEach((t, i) => {
+      t.classList.toggle('active', i + 1 === n);
+    });
+    const page = document.getElementById('page' + n);
+    if (page) page.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Color swatch selection
+  document.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+    });
+  });
+
+  // Scale info badge
+  const badge = document.getElementById('scaleBadge');
+  const DPI = 96, MM_PER_INCH = 25.4;
+  const mmToPx = mm => mm / MM_PER_INCH * DPI;
+  badge.textContent = `A4: ${Math.round(mmToPx(210))} × ${Math.round(mmToPx(297))} px (96dpi)`;
+</script>
+</body>
+</html>

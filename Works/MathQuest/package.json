@@ -1,0 +1,14 @@
+{
+    "name": "mathquest",
+    "version": "1.0.0",
+    "description": "数学 習得レベル管理 - 解けるの先へ",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.18.2",
+        "openai": "^4.86.2"
+    }
+}

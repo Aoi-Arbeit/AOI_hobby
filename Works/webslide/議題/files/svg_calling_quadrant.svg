@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="540" viewBox="0 0 540 540">
+  <rect width="540" height="540" fill="#0d1f2d" rx="14"/>
+  <!-- axes -->
+  <line x1="270" y1="30" x2="270" y2="510" stroke="#334" stroke-width="2"/>
+  <line x1="30" y1="270" x2="510" y2="270" stroke="#334" stroke-width="2"/>
+  <!-- axis labels -->
+  <text x="270" y="22" font-family="Arial" font-size="14" fill="#aaa" text-anchor="middle">好き / ワクワク ▲</text>
+  <text x="270" y="525" font-family="Arial" font-size="14" fill="#aaa" text-anchor="middle">▼ 嫌い / 義務感</text>
+  <text x="22" y="274" font-family="Arial" font-size="14" fill="#aaa" text-anchor="middle" transform="rotate(-90 22 274)">目的なし ◀</text>
+  <text x="518" y="274" font-family="Arial" font-size="14" fill="#aaa" text-anchor="middle" transform="rotate(90 518 274)">▶ 目的・貢献</text>
+  <!-- quadrants -->
+  <!-- ジョブ: 左下 -->
+  <rect x="32" y="272" width="236" height="236" rx="0" fill="#37474F" opacity="0.5"/>
+  <text x="150" y="355" font-size="36" text-anchor="middle">😑</text>
+  <text x="150" y="395" font-family="Arial" font-size="20" font-weight="bold" fill="#78909C" text-anchor="middle">ジョブ</text>
+  <text x="150" y="418" font-family="Arial" font-size="12" fill="#546" text-anchor="middle">やらされ仕事</text>
+  <!-- 趣味: 左上 -->
+  <rect x="32" y="32" width="236" height="236" rx="0" fill="#1565C0" opacity="0.45"/>
+  <text x="150" y="115" font-size="36" text-anchor="middle">🎨</text>
+  <text x="150" y="155" font-family="Arial" font-size="20" font-weight="bold" fill="#64B5F6" text-anchor="middle">趣味</text>
+  <text x="150" y="178" font-family="Arial" font-size="12" fill="#56a" text-anchor="middle">自分は楽しい</text>
+  <!-- キャリア: 右下 -->
+  <rect x="272" y="272" width="236" height="236" rx="0" fill="#4E342E" opacity="0.45"/>
+  <text x="390" y="355" font-size="36" text-anchor="middle">📈</text>
+  <text x="390" y="395" font-family="Arial" font-size="20" font-weight="bold" fill="#BCAAA4" text-anchor="middle">キャリア</text>
+  <text x="390" y="418" font-family="Arial" font-size="12" fill="#876" text-anchor="middle">成果・成長はある</text>
+  <!-- コーリング: 右上（highlight） -->
+  <rect x="272" y="32" width="236" height="236" rx="0" fill="#1B5E20" opacity="0.6"/>
+  <rect x="272" y="32" width="236" height="236" rx="0" fill="none" stroke="#4CAF50" stroke-width="3"/>
+  <text x="390" y="115" font-size="36" text-anchor="middle">⭐</text>
+  <text x="390" y="155" font-family="Arial" font-size="22" font-weight="bold" fill="#A5D6A7" text-anchor="middle">コーリング</text>
+  <text x="390" y="178" font-family="Arial" font-size="13" fill="#81C784" text-anchor="middle">好き × 目的 = 天職</text>
+  <text x="390" y="200" font-family="Arial" font-size="12" fill="#4a8" text-anchor="middle">目指すべき状態 ✓</text>
+</svg>

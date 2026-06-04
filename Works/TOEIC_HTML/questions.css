@@ -1,0 +1,175 @@
+/* --- レイアウト --- */
+#main-content {
+    max-width: 600px; /* 問題文を読みやすくするため少し狭める */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* --- 進捗エリア --- */
+#quiz-header {
+    margin-bottom: 30px;
+}
+
+.progress-info {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+    text-align: right;
+}
+
+#progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden; /* 中のバーのはみ出し防止 */
+}
+
+#progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #4CAF50; /* 進捗は安心感のある緑 */
+    transition: width 0.4s ease-out;
+}
+
+/* --- 問題文 --- */
+#question-text {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+/* --- 選択肢リスト --- */
+#options-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.option-item {
+    background: white;
+    padding: 15px 20px;
+    border: 2px solid #e0e6ed;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.option-item:hover {
+    background-color: #f8fbff;
+    border-color: #007bff;
+}
+
+/* JSで制御するクラス */
+.eliminated {
+    text-decoration: line-through;
+    opacity: 0.4;
+    background-color: #f9f9f9 !important;
+}
+
+.correct-selection {
+    background-color: #e7f9ee !important;
+    border-color: #2ecc71 !important;
+    color: #1e7e34;
+}
+
+.wrong-selection {
+    background-color: #fff1f0 !important;
+    border-color: #ff4d4f !important;
+    color: #a8071a;
+}
+
+/* --- 解説エリア --- */
+#feedback-area {
+    margin-top: 30px;
+    animation: fadeIn 0.5s ease; /* ふわっと表示 */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#result-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.explanation-box {
+    background: #ffffff;
+    border-left: 5px solid #007bff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.answer-row {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+.explanation-content {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+/* --- 操作ボタン --- */
+#quiz-navigation {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#next-btn, #result-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+}
+
+/* --- スキップボタン（トーンを合わせつつ控えめに） --- */
+#question-container {
+    display: flex;
+    flex-direction: column; /* 縦並びのルールを作る */
+}
+
+#skip-btn {
+    width: fit-content;
+    margin: 40px 0 0 auto;
+    
+    /* 背景を透明、またはごく薄い青にする */
+    background-color: #f0f7ff; 
+    /* 文字と枠線はメインの青を少し薄めた色にする */
+    color: #007bff;
+    border: 1px solid #b3d7ff;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    
+    /* 影を消して平坦（フラット）にする */
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+#skip-btn:hover {
+    /* ホバー時は少しだけ色を濃くして、反応を返す */
+    background-color: #e1efff;
+    border-color: #007bff;
+    color: #0056b3;
+}

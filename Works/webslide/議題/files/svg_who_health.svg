@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a3a4a"/>
+      <stop offset="100%" stop-color="#0d1f2d"/>
+    </radialGradient>
+  </defs>
+  <rect width="500" height="500" fill="url(#bg)" rx="16"/>
+  <!-- three overlapping circles -->
+  <circle cx="250" cy="170" r="110" fill="#2E86AB" opacity="0.75"/>
+  <circle cx="160" cy="330" r="110" fill="#A23B72" opacity="0.75"/>
+  <circle cx="340" cy="330" r="110" fill="#F18F01" opacity="0.75"/>
+  <!-- center overlap highlight -->
+  <circle cx="250" cy="283" r="40" fill="white" opacity="0.15"/>
+  <!-- labels -->
+  <text x="250" y="120" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">肉体的健康</text>
+  <text x="250" y="142" font-family="Arial" font-size="13" fill="#d0eaf8" text-anchor="middle">Physical</text>
+  <text x="108" y="370" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">精神的健康</text>
+  <text x="108" y="392" font-family="Arial" font-size="13" fill="#f0d0e8" text-anchor="middle">Mental</text>
+  <text x="392" y="370" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">社会的健康</text>
+  <text x="392" y="392" font-family="Arial" font-size="13" fill="#fde8c0" text-anchor="middle">Social</text>
+  <text x="250" y="290" font-family="Arial" font-size="15" font-weight="bold" fill="white" text-anchor="middle">完全な</text>
+  <text x="250" y="308" font-family="Arial" font-size="15" font-weight="bold" fill="white" text-anchor="middle">健康</text>
+</svg>

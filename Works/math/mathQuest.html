@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学 習得レベル管理 - 解けるの先へ</title>
+    <!-- Tailwind CSS (スタイリング用) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons (アイコン用) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- KaTeX (数式表示用) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .tab-active { border-bottom-width: 2px; border-color: #3b82f6; color: #2563eb; font-weight: bold; }
+        
+        /* 習熟度バッジの色 */
+        .prof-badge-A { background-color: #dcfce7; color: #166534; border: 1px solid #86efac; } /* 翻訳レベル */
+        .prof-badge-B { background-color: #fef08a; color: #854d0e; border: 1px solid #fde047; } /* 反射レベル */
+        .prof-badge-C { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; } /* 納得レベル */
+        .prof-badge-none { background-color: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; } /* 未着手 */
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+    <!-- ヘッダー -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="ph ph-compass text-blue-600"></i>
+                    数学 習得レベル管理
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">「納得」から「反射」、そして「翻訳」へ</p>
+            </div>
+            <div class="flex gap-4 text-sm text-slate-600 hidden md:flex">
+                <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-200 border border-green-400"></span> A: 翻訳</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-200 border border-yellow-400"></span> B: 反射</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-200 border border-red-400"></span> C: 納得</div>
+            </div>
+            <button onclick="openAddModal()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors whitespace-nowrap shadow-sm">
+                <i class="ph ph-plus-circle text-lg"></i> 追加
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-6">
+        
+        <!-- サイドバー (フィルター) -->
+        <aside class="w-full md:w-64 shrink-0">
+            
+            <!-- 【追加】自動復習機能 (エビングハウス) -->
+            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-6 shadow-sm">
+                <h3 class="font-bold text-indigo-800 mb-2 flex items-center gap-2">
+                    <i class="ph-fill ph-brain"></i> 自動復習ミッション
+                </h3>
+                <p class="text-xs text-indigo-700 mb-4 leading-relaxed">
+                    エビングハウスの忘却曲線に基づき、記憶が薄れる最適なタイミングで最大10問を提案します。
+                </p>
+                <button id="btn-auto-review" onclick="toggleAutoReviewMode()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2 text-sm shadow-sm">
+                    <!-- JSで動的にバッジとテキストが入ります -->
+                </button>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6">
+                <h2 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                    <i class="ph ph-funnel"></i> 絞り込み
+                </h2>
+                
+                <div class="mb-5">
+                    <label class="flex items-center gap-2 p-2 hover:bg-slate-50 rounded cursor-pointer transition-colors">
+                        <input type="checkbox" id="filter-review" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                        <span class="text-slate-700 font-medium">📌 要復習のみ表示</span>
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">習熟度</h3>
+                    <select id="filter-proficiency" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">すべて</option>
+                        <option value="A">A: 翻訳レベル</option>
+                        <option value="B">B: 反射レベル</option>
+                        <option value="C">C: 納得レベル</option>
+                        <option value="none">未着手</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 学習の心得 -->
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 hidden md:block">
+                <h3 class="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                    <i class="ph ph-lightbulb-filament"></i> 3つの柱
+                </h3>
+                <ul class="text-sm text-blue-900 space-y-2 pl-1">
+                    <li>① 「網羅性」が「発想力」を生む</li>
+                    <li>② 「計算の省略」ではなく「正確性」</li>
+                    <li>③ 抽象化の武器（思考の型）を持つ</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- メインコンテンツ -->
+        <div class="flex-1 min-w-0">
+            <!-- 分野タブ -->
+            <div class="border-b border-slate-200 mb-6 overflow-x-auto" id="tabs-container">
+                <nav class="flex space-x-2 pb-1" id="category-tabs">
+                    <!-- JSで動的に生成されます -->
+                </nav>
+            </div>
+
+            <!-- 自動復習モード中のヘッダー -->
+            <div id="auto-review-header" class="hidden mb-6 bg-indigo-100 border border-indigo-200 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-indigo-800 font-bold flex items-center gap-2">
+                        <i class="ph-fill ph-target"></i> 今日のミッション (最大10問)
+                    </h2>
+                    <p class="text-xs text-indigo-600 mt-1">解き終わったら「復習完了」を押して記憶を定着させましょう。</p>
+                </div>
+            </div>
+
+            <!-- 問題リスト (グリッド) -->
+            <div id="question-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- JSで動的に生成されます -->
+            </div>
+            
+            <!-- 空の状態 -->
+            <div id="empty-state" class="hidden text-center py-16 px-4">
+                <div id="empty-state-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- メッセージ表示用モーダル -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2">
+        <i class="ph ph-info"></i>
+        <span id="toast-msg">メッセージ</span>
+    </div>
+
+    <!-- 問題追加モーダル -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-lg">新しい問題を追加</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <form id="add-form" onsubmit="handleAddSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">分野 (カテゴリ)</label>
+                    <input type="text" id="new-category" required placeholder="例: 微分・積分" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">テーマ (問題の概要)</label>
+                    <input type="text" id="new-theme" required placeholder="例: 3次関数の極値" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">手に入れるべき武器 (思考の型)</label>
+                    <input type="text" id="new-weapon" required placeholder="例: 増減表を素早く正確に書く" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">具体的な問題文 (任意)</label>
+                    <textarea id="new-question-text" rows="3" placeholder="例: $163x + 78y = 1$ の整数解をすべて求めよ。" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+                    <p class="text-xs text-slate-500 mt-1">※数式は $ で囲むと綺麗に表示されます</p>
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">追加する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. データ定義 (初期データ) ※lastReviewedAt, reviewCountを追加
+        const initialData = [
+            { id: "q1", category: "2次関数", theme: "文字定数を含む2次関数の最大・最小", weapon: "「場合分け」の全パターン網羅", questionText: "関数 $f(x) = x^2 - 2ax + a^2 + 1 \\ (0 \\leqq x \\leqq 2)$ の最小値を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q14", category: "2次関数", theme: "解の配置問題（2次方程式の解の符号）", weapon: "「D・軸・f(k)」の3条件のグラフ化", questionText: "2次方程式 $x^2 - 2ax + a + 2 = 0$ が異なる2つの正の解をもつような定数 $a$ の値の範囲を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q2", category: "図形と計量", theme: "円に内接する四角形の計量（面積・対角線）", weapon: "正弦・余弦定理の「使い分け」", questionText: "円に内接する四角形ABCDにおいて、$AB=5, BC=4, CD=4, \\angle B=60^\\circ$ のとき、対角線 $AC$ の長さと四角形ABCDの面積を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q3", category: "場合の数・確率", theme: "反復試行の確率と最大値（Pn の比較）", weapon: "「規則性」を数式化する力", questionText: "", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q4", category: "整数の性質", theme: "1次不定方程式 ax+by=c の整数解", weapon: "「ユークリッドの互除法」とmod", questionText: "", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q11", category: "整数の性質", theme: "1次不定方程式の基本", weapon: "ユークリッドの互除法", questionText: "$163x + 78y = 1$ の整数解をすべて求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q12", category: "整数の性質", theme: "1次不定方程式 (右辺が1以外)", weapon: "互除法からの逆算と右辺の定数倍", questionText: "$43x + 18y = 3$ の整数解をすべて求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q13", category: "整数の性質", theme: "1次不定方程式の応用", weapon: "一般解からの絞り込み", questionText: "$143x + 23y = 1$ の整数解のうち、$x$ の絶対値が最小のものを求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q5", category: "図形と方程式", theme: "2円の交点を通る図形（円束）と接線", weapon: "図形問題を「数式（座標）」で解く力", questionText: "円 $x^2 + y^2 = 5$ に、点 $(3, 1)$ から引いた2つの接線の方程式を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q6", category: "三角関数", theme: "三角関数の合成を用いた最大・最小", weapon: "複数の変数を「一本化」する技術", questionText: "関数 $y = \\sqrt{3}\\sin x + \\cos x \\ (0 \\leqq x < 2\\pi)$ の最大値と最小値を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q15", category: "三角関数", theme: "対称式の最大・最小", weapon: "$t = \\sin x + \\cos x$ とおき、tの変域に注意して2次関数に帰着", questionText: "関数 $y = \\sin 2x + 2(\\sin x + \\cos x)$ の最大値と最小値を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q7", category: "指数・対数", theme: "対数不等式と底の条件・真数条件", weapon: "「隠れた条件」を見落とさない癖", questionText: "", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q8", category: "微分・積分", theme: "放物線と接線で囲まれた面積（1/6公式）", weapon: "「計算の工夫」による時短と正確性", questionText: "", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q16", category: "微分・積分", theme: "3次関数が極値をもつ条件", weapon: "$f'(x)=0$ の判別式 $D>0$", questionText: "関数 $f(x) = x^3 + ax^2 + 3x + 1$ が極値をもつような定数 $a$ の値の範囲を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q9", category: "数列", theme: "隣接2項間の漸化式 an+1=pan+q", weapon: "未知の形を「基本形」に帰着させる力", questionText: "$a_1 = 1, \\ a_{n+1} = 3a_n + 2$ で定められる数列 $\\{a_n\\}$ の一般項を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q17", category: "数列", theme: "群数列", weapon: "「第$n$群の項数」と「全体の第何項か」を対応させる", questionText: "自然数の列を $1 \\ | \\ 2, 3 \\ | \\ 4, 5, 6 \\ | \\ 7, \\cdots$ と群に分けるとき、第$n$群の最初の数を求めよ。", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 },
+            { id: "q10", category: "ベクトル", theme: "空間における交点の位置ベクトル（共面条件）", weapon: "3次元を「1次独立な3本」で支配する力", questionText: "", proficiency: "none", review: false, lastReviewedAt: null, reviewCount: 0 }
+        ];
+
+        // 状態管理
+        let questions = [];
+        let currentCategory = 'all';
+        let categories = [];
+        let isAutoReviewMode = false;
+
+        // DOM要素
+        const categoryTabsEl = document.getElementById('category-tabs');
+        const questionGridEl = document.getElementById('question-grid');
+        const filterProficiencyEl = document.getElementById('filter-proficiency');
+        const filterReviewEl = document.getElementById('filter-review');
+        const emptyStateEl = document.getElementById('empty-state');
+        const emptyStateContentEl = document.getElementById('empty-state-content');
+        const toastEl = document.getElementById('toast');
+        const toastMsgEl = document.getElementById('toast-msg');
+        const addModalEl = document.getElementById('add-modal');
+        const addFormEl = document.getElementById('add-form');
+
+        // 2. 初期化
+        function init() {
+            const savedData = localStorage.getItem('mathQuestData');
+            if (savedData) {
+                questions = JSON.parse(savedData);
+                // 初期データに新しい項目が追加されていた場合の簡易マージ
+                if (questions.length < initialData.length) {
+                    const savedIds = questions.map(q => q.id);
+                    const newItems = initialData.filter(q => !savedIds.includes(q.id));
+                    questions = [...questions, ...newItems];
+                }
+            } else {
+                questions = [...initialData];
+            }
+
+            migrateDataForSpacedRepetition(); // 既存データに復習履歴がない場合のマイグレーション
+            categories = ['all', ...new Set(questions.map(q => q.category))];
+
+            renderTabs();
+            renderQuestions();
+            updateAutoReviewBadge();
+
+            filterProficiencyEl.addEventListener('change', () => { if(!isAutoReviewMode) renderQuestions(); });
+            filterReviewEl.addEventListener('change', () => { if(!isAutoReviewMode) renderQuestions(); });
+        }
+
+        // 既存ユーザー向けのデータマイグレーション（過去に解いた問題がすぐ復習対象になるよう補正）
+        function migrateDataForSpacedRepetition() {
+            let changed = false;
+            questions.forEach(q => {
+                if (q.proficiency !== 'none' && !q.lastReviewedAt) {
+                    // 便宜上、2日前に解いたことにして今日の復習ミッションに載せる
+                    q.lastReviewedAt = Date.now() - (2 * 24 * 60 * 60 * 1000);
+                    q.reviewCount = 1;
+                    changed = true;
+                }
+            });
+            if (changed) saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('mathQuestData', JSON.stringify(questions));
+        }
+
+        // --- 忘却曲線ロジック (Spaced Repetition) ---
+        function getSpacedRepetitionQuestions() {
+            const now = Date.now();
+            // 復習回数ごとの次回までの間隔 (日数)
+            const intervalsDays = {
+                1: 1,   // 1回目クリア → 1日後
+                2: 3,   // 2回目クリア → 3日後
+                3: 7,   // 3回目クリア → 7日後
+                4: 14,  // 4回目クリア → 14日後
+                5: 30   // 5回目以降 → 30日後
+            };
+
+            const dueQuestions = questions.filter(q => {
+                if (!q.lastReviewedAt || q.proficiency === 'none') return false;
+                
+                const count = q.reviewCount || 1;
+                const baseIntervalDays = intervalsDays[count] || 30;
+                let finalIntervalMs = baseIntervalDays * 24 * 60 * 60 * 1000;
+
+                // 習熟度がA(翻訳)の場合は定着しているとみなし、間隔を1.5倍に延ばす
+                if (q.proficiency === 'A') finalIntervalMs *= 1.5;
+
+                return (now - q.lastReviewedAt) >= finalIntervalMs;
+            });
+
+            // 期日をより大きく過ぎているもの（忘れかけているもの）を優先
+            dueQuestions.sort((a, b) => a.lastReviewedAt - b.lastReviewedAt);
+
+            // 最大10問に絞る
+            return dueQuestions.slice(0, 10);
+        }
+
+        // モード切替
+        window.toggleAutoReviewMode = function() {
+            isAutoReviewMode = !isAutoReviewMode;
+            
+            const btn = document.getElementById('btn-auto-review');
+            const header = document.getElementById('auto-review-header');
+            const tabsContainer = document.getElementById('tabs-container');
+
+            if (isAutoReviewMode) {
+                const dueCount = getSpacedRepetitionQuestions().length;
+                if(dueCount === 0) {
+                    isAutoReviewMode = false;
+                    showToast("今は復習する問題がありません。新しい問題を解きましょう！");
+                    return;
+                }
+                
+                btn.classList.replace('bg-indigo-600', 'bg-slate-100');
+                btn.classList.replace('hover:bg-indigo-700', 'hover:bg-slate-200');
+                btn.classList.replace('text-white', 'text-slate-700');
+                btn.innerHTML = `<i class="ph ph-x text-lg"></i> 通常モードに戻る`;
+                
+                header.classList.remove('hidden');
+                tabsContainer.classList.add('hidden'); // タブを隠す
+                
+                // フィルターを無効化
+                filterProficiencyEl.disabled = true;
+                filterReviewEl.disabled = true;
+                
+            } else {
+                btn.classList.replace('bg-slate-100', 'bg-indigo-600');
+                btn.classList.replace('hover:bg-slate-200', 'hover:bg-indigo-700');
+                btn.classList.replace('text-slate-700', 'text-white');
+                
+                header.classList.add('hidden');
+                tabsContainer.classList.remove('hidden');
+                
+                filterProficiencyEl.disabled = false;
+                filterReviewEl.disabled = false;
+                
+                updateAutoReviewBadge();
+            }
+            renderQuestions();
+        };
+
+        function updateAutoReviewBadge() {
+            if(isAutoReviewMode) return;
+            const btn = document.getElementById('btn-auto-review');
+            const dueCount = getSpacedRepetitionQuestions().length;
+            
+            if (dueCount > 0) {
+                btn.innerHTML = `<span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">${dueCount}</span> ミッションを開始`;
+                btn.classList.remove('opacity-70');
+            } else {
+                btn.innerHTML = `<i class="ph-fill ph-check-circle text-lg"></i> 今日の復習は完了！`;
+                btn.classList.add('opacity-70');
+            }
+        }
+
+        // 3. タブの描画
+        function renderTabs() {
+            categoryTabsEl.innerHTML = '';
+            
+            const allBtn = document.createElement('button');
+            allBtn.className = `whitespace-nowrap py-2 px-4 text-sm font-medium rounded-t-lg transition-colors hover:bg-slate-100 ${currentCategory === 'all' ? 'tab-active bg-white' : 'text-slate-500'}`;
+            allBtn.textContent = 'すべて';
+            allBtn.onclick = () => { currentCategory = 'all'; renderTabs(); renderQuestions(); };
+            categoryTabsEl.appendChild(allBtn);
+
+            categories.slice(1).forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `whitespace-nowrap py-2 px-4 text-sm font-medium rounded-t-lg transition-colors hover:bg-slate-100 ${currentCategory === cat ? 'tab-active bg-white' : 'text-slate-500'}`;
+                btn.textContent = cat;
+                btn.onclick = () => { currentCategory = cat; renderTabs(); renderQuestions(); };
+                categoryTabsEl.appendChild(btn);
+            });
+        }
+
+        // 4. 問題リストの描画
+        function renderQuestions() {
+            let filteredQuestions = [];
+
+            if (isAutoReviewMode) {
+                filteredQuestions = getSpacedRepetitionQuestions();
+            } else {
+                const selectedProf = filterProficiencyEl.value;
+                const onlyReview = filterReviewEl.checked;
+
+                filteredQuestions = questions.filter(q => {
+                    const matchCategory = currentCategory === 'all' || q.category === currentCategory;
+                    const matchProf = selectedProf === 'all' || q.proficiency === selectedProf;
+                    const matchReview = !onlyReview || q.review === true;
+                    return matchCategory && matchProf && matchReview;
+                });
+            }
+
+            questionGridEl.innerHTML = '';
+
+            if (filteredQuestions.length === 0) {
+                emptyStateEl.classList.remove('hidden');
+                if (isAutoReviewMode) {
+                    emptyStateContentEl.innerHTML = `
+                        <i class="ph-fill ph-confetti text-6xl text-indigo-400 mb-4 block"></i>
+                        <p class="text-slate-700 font-bold text-xl mb-2">今日のミッション完了！</p>
+                        <p class="text-slate-500">忘却曲線に従って、明日以降にまた最適な問題が提案されます。</p>
+                        <button onclick="toggleAutoReviewMode()" class="mt-6 text-indigo-600 hover:text-indigo-800 font-medium underline">通常モードに戻る</button>
+                    `;
+                } else {
+                    emptyStateContentEl.innerHTML = `
+                        <i class="ph ph-folder-dashed text-5xl text-slate-300 mb-3 block"></i>
+                        <p class="text-slate-500">該当する条件の問題は見つかりませんでした。</p>
+                    `;
+                }
+            } else {
+                emptyStateEl.classList.add('hidden');
+                
+                filteredQuestions.forEach(q => {
+                    const card = document.createElement('div');
+                    card.className = `bg-white border rounded-xl p-5 shadow-sm transition-all hover:shadow-md relative overflow-hidden flex flex-col ${q.review ? 'border-amber-300' : 'border-slate-200'}`;
+                    
+                    const pinHtml = q.review ? `<div class="absolute top-0 right-0 bg-amber-100 text-amber-600 px-3 py-1 rounded-bl-lg text-xs font-bold flex items-center gap-1 border-l border-b border-amber-200"><i class="ph-fill ph-push-pin"></i> 要復習</div>` : '';
+                    const profLabel = getProficiencyLabel(q.proficiency);
+
+                    const questionTextHtml = q.questionText 
+                        ? `<div class="mt-3 mb-3 p-4 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 text-sm math-content">${q.questionText}</div>` 
+                        : '';
+
+                    // 復習履歴の表示
+                    let reviewInfoHtml = '';
+                    if (q.lastReviewedAt && q.proficiency !== 'none') {
+                        const daysAgo = Math.floor((Date.now() - q.lastReviewedAt) / (24 * 60 * 60 * 1000));
+                        reviewInfoHtml = `
+                            <div class="text-[11px] text-slate-400 flex items-center gap-1 mt-1 mb-2">
+                                <i class="ph ph-clock-counter-clockwise"></i> 復習${q.reviewCount || 1}回目 (前回: ${daysAgo === 0 ? '今日' : daysAgo + '日前'})
+                            </div>
+                        `;
+                    }
+
+                    // 復習モード専用の「完了」ボタン
+                    const markReviewedBtn = isAutoReviewMode ? `
+                        <button onclick="markAsReviewed('${q.id}')" class="w-full mt-3 py-2.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors">
+                            <i class="ph-fill ph-check-circle text-lg"></i> この問題の復習を完了する
+                        </button>
+                    ` : '';
+
+                    card.innerHTML = `
+                        ${pinHtml}
+                        <div class="text-xs font-bold text-blue-600 mb-1 tracking-wide">${q.category}</div>
+                        <h3 class="text-lg font-bold text-slate-800 leading-snug pr-8">${q.theme}</h3>
+                        ${reviewInfoHtml}
+                        ${questionTextHtml}
+
+                        <div class="bg-slate-50 rounded-lg p-3 mb-auto border border-slate-100">
+                            <div class="text-xs text-slate-500 mb-1 flex items-center gap-1"><i class="ph ph-sword text-slate-400"></i> 手に入れるべき武器</div>
+                            <div class="font-medium text-slate-700 text-sm">${q.weapon}</div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4 pt-4 border-t border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-500 font-medium">習熟度:</span>
+                                <select onchange="updateProficiency('${q.id}', this.value)" class="text-sm rounded-md px-2 py-1 appearance-none cursor-pointer outline-none ${profLabel.className}">
+                                    <option value="none" ${q.proficiency === 'none' ? 'selected' : ''}>未着手</option>
+                                    <option value="C" ${q.proficiency === 'C' ? 'selected' : ''}>C: 納得</option>
+                                    <option value="B" ${q.proficiency === 'B' ? 'selected' : ''}>B: 反射</option>
+                                    <option value="A" ${q.proficiency === 'A' ? 'selected' : ''}>A: 翻訳</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="toggleReview('${q.id}')" class="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors ${q.review ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                    <i class="${q.review ? 'ph-fill ph-push-pin' : 'ph ph-push-pin'}"></i>
+                                    ${q.review ? '外す' : 'ピン留め'}
+                                </button>
+                            </div>
+                        </div>
+                        ${markReviewedBtn}
+                    `;
+                    questionGridEl.appendChild(card);
+                });
+
+                if (window.renderMathInElement) {
+                    renderMathInElement(questionGridEl, {
+                        delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}],
+                        throwOnError: false
+                    });
+                }
+            }
+        }
+
+        function getProficiencyLabel(prof) {
+            switch(prof) {
+                case 'A': return { className: 'prof-badge-A' };
+                case 'B': return { className: 'prof-badge-B' };
+                case 'C': return { className: 'prof-badge-C' };
+                default: return { className: 'prof-badge-none' };
+            }
+        }
+
+        // --- アクション関数 ---
+
+        // 習熟度を変更した際の処理
+        window.updateProficiency = function(id, value) {
+            const index = questions.findIndex(q => q.id === id);
+            if (index !== -1) {
+                const q = questions[index];
+                const oldProf = q.proficiency;
+                q.proficiency = value;
+                
+                // 自動復習データの更新
+                if (value === 'none') {
+                    q.lastReviewedAt = null;
+                    q.reviewCount = 0;
+                } else if (oldProf !== value || isAutoReviewMode) {
+                    const now = Date.now();
+                    // 前回から12時間以上経過している場合のみカウントアップ（連続変更の防止）
+                    if (!q.lastReviewedAt || (now - q.lastReviewedAt > 12 * 60 * 60 * 1000)) {
+                        q.reviewCount = (q.reviewCount || 0) + 1;
+                    }
+                    q.lastReviewedAt = now;
+                }
+                
+                saveData();
+                renderQuestions();
+                if(!isAutoReviewMode) updateAutoReviewBadge();
+                
+                if(value === 'A') showToast("素晴らしい！「翻訳」レベル到達です🎉");
+                else if(value === 'B' && oldProf !== 'A') showToast("「反射」レベル！基礎が固まってきました👍");
+            }
+        };
+
+        // 復習モード中に「習熟度を変えずに完了」を押した際の処理
+        window.markAsReviewed = function(id) {
+            const index = questions.findIndex(q => q.id === id);
+            if (index !== -1) {
+                const q = questions[index];
+                const now = Date.now();
+                if (!q.lastReviewedAt || (now - q.lastReviewedAt > 12 * 60 * 60 * 1000)) {
+                    q.reviewCount = (q.reviewCount || 0) + 1;
+                }
+                q.lastReviewedAt = now;
+                
+                saveData();
+                showToast("復習を記録しました！次の復習タイミングまで間隔が延びます📈");
+                
+                // 即座に一覧から消す
+                renderQuestions();
+                
+                // もし0件になったら自動的に通常モードへ戻る
+                if(getSpacedRepetitionQuestions().length === 0) {
+                    setTimeout(() => { toggleAutoReviewMode(); }, 1500);
+                }
+            }
+        };
+
+        window.toggleReview = function(id) {
+            const index = questions.findIndex(q => q.id === id);
+            if (index !== -1) {
+                questions[index].review = !questions[index].review;
+                saveData();
+                renderQuestions();
+            }
+        };
+
+        function showToast(message) {
+            toastMsgEl.innerText = message;
+            toastEl.classList.remove('translate-y-20', 'opacity-0');
+            toastEl.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toastEl.classList.remove('translate-y-0', 'opacity-100');
+                toastEl.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.openAddModal = function() {
+            addModalEl.classList.remove('hidden');
+            document.getElementById('new-category').focus();
+        };
+
+        window.closeAddModal = function() {
+            addModalEl.classList.add('hidden');
+            addFormEl.reset();
+        };
+
+        window.handleAddSubmit = function(e) {
+            e.preventDefault();
+            const category = document.getElementById('new-category').value.trim();
+            const theme = document.getElementById('new-theme').value.trim();
+            const weapon = document.getElementById('new-weapon').value.trim();
+            const questionText = document.getElementById('new-question-text').value.trim();
+            
+            if(!category || !theme || !weapon) return;
+
+            const newQuestion = {
+                id: 'q' + Date.now(),
+                category: category,
+                theme: theme,
+                weapon: weapon,
+                questionText: questionText,
+                proficiency: "none",
+                review: false,
+                lastReviewedAt: null, // 新規作成時は未学習
+                reviewCount: 0
+            };
+
+            questions.push(newQuestion);
+            if(!categories.includes(category)) categories.push(category);
+            saveData();
+            
+            if(currentCategory !== 'all' && currentCategory !== category && !isAutoReviewMode) {
+                currentCategory = category;
+            }
+            
+            renderTabs();
+            if(!isAutoReviewMode) renderQuestions();
+            closeAddModal();
+            showToast("新しい問題を追加しました！");
+        };
+
+        init();
+    </script>
+</body>
+</html>

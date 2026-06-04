@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TOEIC対策</title>
+
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <header>
+        良い感じの画像
+        <div id="streak-section">
+            🔥 現在 <span id="streakCount">0</span> 日連続！
+        </div>
+        <section id="auth-section-container">
+            <div id="auth-section">
+                <button id="login-btn">Googleでログイン</button>
+            </div>
+            <div id="user-info" style="display: none;">
+                <p>こんにちは、<span id="user-name"></span>さん</p>
+                <button id="logout-btn">ログアウト</button>
+            </div>
+        </section>
+    </header>
+
+    <main id="main-content">
+        <h1>TOEIC対策
+            <span>リーディング文法</span>
+        </h1>
+
+        <div id="problems-section">
+            <h2>問題に挑戦</h2>
+            <p>TOEICのリーディングセクションの文法問題を解いて、スコアアップを目指しましょう！</p>
+            <a href="questions.html">問題に進む</a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- リンク -->
+        <ul>
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="questions.html">問題</a></li>
+            <li><a href="explanation/explanation.html">解説</a></li>
+            <li><a href="mypage.html">マイページ</a></li>
+        </ul>
+    </footer>
+    <script type="module" src="index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+/* ── base.css : リセット & 基本スタイル ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-primary:  #1a3a5c;
+  --color-accent:   #2e7dcc;
+  --color-bg:       #e8edf3;
+  --color-surface:  #ffffff;
+  --color-border:   #c0cfe0;
+  --color-text:     #1e1e1e;
+  --color-muted:    #6b7a8d;
+  --color-light:    #f0f4f8;
+  --color-danger:   #c0392b;
+  --color-success:  #2a7a4b;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; }
+input, select, textarea { font-family: inherit; }
+
+/* トースト通知 */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* モーダルオーバーレイ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--color-surface);
+  border-radius: 10px;
+  padding: 28px 32px;
+  min-width: 320px;
+  max-width: 500px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+  transform: translateY(20px);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-title { font-size: 15px; font-weight: 700; color: var(--color-primary); margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.btn {
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+.btn-primary { background: var(--color-accent); color: #fff; }
+.btn-primary:hover { background: #2570bb; }
+.btn-ghost { background: var(--color-light); color: var(--color-primary); }
+.btn-ghost:hover { background: var(--color-border); }
+.btn-danger { background: var(--color-danger); color: #fff; }

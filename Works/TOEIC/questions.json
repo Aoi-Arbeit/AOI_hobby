@@ -1,0 +1,24 @@
+[
+  {
+    "difficulty": "⭐4",
+    "question": "The newly appointed CEO is expected to ______ the company's overseas expansion strategy next month.",
+    "options": {
+      "A": "finalize",
+      "B": "final",
+      "C": "finally",
+      "D": "finality"
+    },
+    "answer": "A"
+  },
+  {
+    "difficulty": "⭐2",
+    "question": "Please ______ your ID badge at all times while you are inside the office building.",
+    "options": {
+      "A": "wear",
+      "B": "wore",
+      "C": "worn",
+      "D": "wearing"
+    },
+    "answer": "A"
+  }
+]
